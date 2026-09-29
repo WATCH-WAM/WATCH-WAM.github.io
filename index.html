@@ -423,12 +423,11 @@
       </figure>
       <div class="content has-text-justified lead-narrow">
         <p>
-          <b>(a)</b> Human videos of the same task are paired across collection sources and scenes.
-          <b>(b)</b> Conditioned on the reference video and actions, the model predicts the target&rsquo;s actions and
-          future frames from its initial frame. The reference&rsquo;s appearance does not transfer, so what it can pass
-          on is the interaction.
-          <b>(c)</b> After robot post-training, WATCH substantially improves success rates over the base model in both
-          in-context and context-free settings.
+          (a) Human videos of the same task are paired across collection sources and scenes.
+          (b) Given the reference video and its actions, the model predicts the target&rsquo;s actions and future
+          frames from the target&rsquo;s initial frame.
+          (c) After robot post-training, WATCH improves success rates over the base model in both in-context and
+          context-free settings.
         </p>
       </div>
     </div>
@@ -438,17 +437,15 @@
         <h4>Within-video pre-training</h4>
         <div class="formula">p(a<sub>t:t+C</sub>, I<sub>t+1:t+C+1</sub> | I<sub>t</sub>, s<sub>t</sub>, &#8467;)</div>
         <p>
-          Context and target come from the <i>same</i> demonstration, so they share background, viewpoint and
-          demonstrator. Prediction can lean on these demonstration-specific cues instead of the interaction.
+          Context and target come from the same demonstration and share its background, viewpoint and demonstrator.
         </p>
       </div>
       <div class="contrast-card ours">
         <h4>Cross-video pre-training (WATCH)</h4>
         <div class="formula">p(a<sup>q</sup><sub>t:t+C</sub>, I<sup>q</sup><sub>t+1:t+C+1</sub> | I<sup>q</sup><sub>t</sub>, s<sup>q</sup><sub>t</sub>, &#8467;, I<sup>r</sup>, a<sup>r</sup>)</div>
         <p>
-          A <span style="color:var(--ref);font-weight:600;">reference</span> from a <i>different</i> demonstration of
-          the same task supplies the motion; the <span style="color:var(--cur);font-weight:600;">query</span>&rsquo;s
-          current frame sets the scene. The model must transfer the interaction into a new visual and geometric context.
+          The reference comes from a different demonstration of the same task, and the query&rsquo;s current frame
+          defines the scene to predict in.
         </p>
       </div>
     </div>
@@ -462,20 +459,19 @@
 <section class="section" id="data">
   <div class="container is-wide">
     <div class="has-text-centered">
-      <h2 class="title is-3">Task-Paired Human Demonstrations</h2>
+      <h2 class="title is-3">Data</h2>
       <p class="content lead-narrow has-text-justified">
-        Human demonstrations recorded by different people, with different rigs and in different environments, vary
-        along the same axes on which a robot differs from a human. Pairing demonstrations of the same task across these
-        collection sources supplies cross-embodiment variation <b>without any matched robot data</b>. We build
-        query&ndash;reference pairs from different episodes of <b>EgoVerse</b>, with human actions expressed in a
-        shared human&ndash;robot task space.
+        Human demonstrations collected by different people, with different rigs and in different environments, vary
+        along the same axes on which a robot differs from a human. We pair demonstrations of the same task across these
+        collection sources, without any robot data. Query&ndash;reference pairs are built from different episodes of
+        EgoVerse, with human actions expressed in a shared human&ndash;robot task space.
       </p>
     </div>
 
     <ol class="steps content">
       <li><b>Task taxonomy.</b> A semantic task taxonomy restricts candidate references to compatible activities.</li>
-      <li><b>Motion matching.</b> Candidates are ranked by dynamic-time-warping distance between motion trajectories, standardized per window so interactions match despite differences in reach.</li>
-      <li><b>Reference set.</b> Up to 8 nearest matches from the query&rsquo;s own source and up to 7 from other sources; one is sampled at every training step.</li>
+      <li><b>Motion matching.</b> Candidates are ranked by the dynamic-time-warping distance between motion trajectories, standardized per window.</li>
+      <li><b>Reference set.</b> Up to 8 nearest matches from the query&rsquo;s source and up to 7 from other sources. One reference is sampled at each training step.</li>
     </ol>
 
     <table class="stat-table">
@@ -484,10 +480,9 @@
     </table>
 
     <div class="sub-block">
-      <h3 class="title is-4 has-text-centered">Explore the Pairs</h3>
+      <h3 class="title is-4 has-text-centered">Examples of Paired Demonstrations</h3>
       <p class="content has-text-centered lead-narrow" style="margin-bottom:0;">
-        Each query window with its retrieved task-matched references, ranked by motion distance.
-        Hand trajectories are overlaid.
+        Query windows and their retrieved references, ranked by motion distance. Hand trajectories are overlaid.
       </p>
       <div class="tabs-row" id="data-tabs"></div>
 
@@ -516,13 +511,12 @@
 <section class="section" id="model">
   <div class="container is-wide">
     <div class="has-text-centered">
-      <h2 class="title is-3">Reference-Conditioned Joint Action&ndash;Video Prediction</h2>
+      <h2 class="title is-3">Model</h2>
       <p class="content lead-narrow has-text-justified">
-        WATCH builds on the joint video&ndash;action recipe of Cosmos Policy. The reference video and its actions,
-        from a different demonstration of the same task, enter as <b>clean conditioning tokens</b> together with the
-        query&rsquo;s current frame and proprioceptive state; the query&rsquo;s action chunk and future frames are the
-        <b>noised tokens</b> the model denoises. The same slot layout carries over to robot post-training, with a human
-        demonstration as the reference or with the reference slots removed.
+        WATCH follows the joint video&ndash;action formulation of Cosmos Policy. The reference video and actions, the
+        query&rsquo;s current frame and the proprioceptive state are clean conditioning inputs; the query&rsquo;s
+        action chunk and future frames are noised and denoised by the model. The same layout is used in robot
+        post-training, either with a human demonstration as the reference or with the reference slots removed.
       </p>
     </div>
 
@@ -594,18 +588,18 @@
     <div class="has-text-centered">
       <h2 class="title is-3">Robot Post-Training</h2>
       <p class="content lead-narrow has-text-justified">
-        After pre-training on human pairs only, the model is post-trained on the GR1 humanoid and conditioned on a
-        human demonstration of the task at test time. MimicDroid evaluates three levels: <b>L1</b> (seen object, seen
-        environment), <b>L2</b> (unseen object, seen environment) and <b>L3</b> (unseen object, unseen environment).
-        L2 and L3 scenes are never trained on. All rollouts use the Cosmos-Predict2.5 backbone (Cosmos Policy).
+        After pre-training on human pairs, the model is post-trained on the GR1 humanoid and conditioned on a human
+        demonstration at test time. MimicDroid has three levels: L1 (seen object, seen environment), L2 (unseen object,
+        seen environment) and L3 (unseen object, unseen environment). All rollouts use Cosmos Policy
+        (Cosmos-Predict2.5 backbone).
       </p>
     </div>
 
     <!-- ---- all tasks ---- -->
     <div style="margin-top:1.6rem;">
-      <h3 class="title is-4 has-text-centered">All MimicDroid Tasks</h3>
+      <h3 class="title is-4 has-text-centered">MimicDroid Rollouts</h3>
       <p class="content has-text-centered lead-narrow" style="margin-bottom:0;">
-        WATCH on every MimicDroid task, with the human reference it is conditioned on, from all three cameras.
+        WATCH rollouts and the human reference, from three cameras.
       </p>
       <div class="level-tabs" id="all-tasks"></div>
       <div class="views-panel">
@@ -636,11 +630,10 @@
 
     <!-- ---- comparison ---- -->
     <div style="margin-top:3rem;">
-      <h3 class="title is-4 has-text-centered">Same Episode, Three Pre-Training Choices</h3>
+      <h3 class="title is-4 has-text-centered">Comparison</h3>
       <p class="content has-text-centered lead-narrow" style="margin-bottom:0;">
-        The same evaluation episode and reference for Cosmos Policy post-trained without pre-training, after
-        within-video pre-training on the same human data, and after WATCH, on every MimicDroid task (L1&ndash;L3),
-        one episode per task.
+        Cosmos Policy without pre-training, with within-video pre-training and with WATCH, on the same evaluation
+        episode and reference. One episode per task.
       </p>
       <div class="frame-tabs tt-tabs" id="cmp-tasks"></div>
       <div class="ctrl-row" style="margin-top:0;">
@@ -664,9 +657,7 @@
     <div style="margin-top:3rem;" id="ph-2x">
       <h3 class="title is-4 has-text-centered">2&times; Speed Reference</h3>
       <p class="content has-text-centered lead-narrow" style="margin-bottom:0;">
-        The human reference is replayed at 2&times; speed, faster than the robot can follow, in post-training and
-        evaluation. The same evaluation episode for the three pre-training choices on every MimicDroid task
-        (L1&ndash;L3), one episode per task.
+        The human reference is played at 2&times; speed in post-training and evaluation. One episode per task.
       </p>
       <div class="frame-tabs tt-tabs" id="cmp2x-tasks"></div>
       <div class="ctrl-row" style="margin-top:0;">
@@ -689,7 +680,7 @@
     <!-- ---- TableTop-Sim (context-free) ---- -->
     <div class="ph-block" id="ph-tt">
       <h3 class="title is-4 has-text-centered">TableTop-Sim (Bimanual ALOHA)</h3>
-      <p class="ph-lead">Context-free post-training on a bimanual ALOHA robot with a different action space and no reference input, for the three pre-training choices.</p>
+      <p class="ph-lead">Context-free post-training on a bimanual ALOHA robot. One episode per task.</p>
       <div class="frame-tabs tt-tabs" id="tt-tasks"></div>
       <div class="tt-row">
         <div class="cmp-col"><p class="mname">Without pre-training</p><div class="vbox base tt"><video id="tt-v-without_pretraining" autoplay loop muted playsinline></video></div></div>
@@ -701,7 +692,7 @@
     <!-- ---- RoboCasa Kitchen-H50 (context-free) ---- -->
     <div class="ph-block" id="ph-rc">
       <h3 class="title is-4 has-text-centered">RoboCasa Kitchen-H50 (Franka)</h3>
-      <p class="ph-lead">Context-free post-training on a single-arm Franka with 50 human demonstrations per task. The same episode for the three pre-training choices, one episode per task.</p>
+      <p class="ph-lead">Context-free post-training on a single-arm Franka with 50 demonstrations per task. One episode per task.</p>
       <div class="tabs-row" id="rc-tasks"></div>
       <div class="ctrl-row" style="margin-top:0;">
         <div class="ctrl" id="rc-cam"><span class="lab">Camera</span><button data-v="left" class="is-active">Left</button><button data-v="right">Right</button><button data-v="wrist">Wrist</button></div>
@@ -715,8 +706,8 @@
 
     <!-- ---- context-free MimicDroid ---- -->
     <div class="ph-block" id="ph-cf-md">
-      <h3 class="title is-4 has-text-centered">MimicDroid Without a Reference</h3>
-      <p class="ph-lead">The reference slots are removed in post-training and evaluation (GR1 humanoid). The same evaluation episode for the three pre-training choices, one episode per task.</p>
+      <h3 class="title is-4 has-text-centered">Context-Free MimicDroid</h3>
+      <p class="ph-lead">MimicDroid (GR1 humanoid) with the reference slots removed in post-training and evaluation. One episode per task.</p>
       <div class="frame-tabs tt-tabs" id="cmpcf-tasks"></div>
       <div class="ctrl-row" style="margin-top:0;">
         <div class="ctrl" id="cmpcf-cam"><span class="lab">Camera</span><button data-v="rear" class="is-active">Rear</button><button data-v="left">Left</button><button data-v="right">Right</button></div>
@@ -730,7 +721,7 @@
 
     <!-- ---- Scaling (paper Figures 9 and 21) ---- -->
     <div class="ph-block" id="ph-scale">
-      <h3 class="title is-4 has-text-centered">More Paired Human Video, Better Robot Policies</h3>
+      <h3 class="title is-4 has-text-centered">Scaling Pre-training Data</h3>
       <div class="ctrl-row">
         <div class="ctrl" id="scale-setting"><span class="lab">Post-training</span><button data-v="icl" class="is-active">In-context</button><button data-v="cf">Context-free</button></div>
       </div>
@@ -746,12 +737,11 @@
       </div>
       <div class="content finding has-text-justified">
         <ul>
-          <li><b>More paired human video, higher success.</b> Success rises with the share of paired human video used for
-            pre-training. With 25% of it, WATCH already matches within-video pre-training on all of the human data on
-            the unseen in-context levels (L2, L3), and it surpasses that baseline at 50% on L3 and 75% on L2.</li>
-          <li><b>Human pairs are cheaper to scale than robot pairs.</b> Counting the cost of collecting each kind of video
-            (robot video at 8&times; the cost of human video), in-context L2 reaches 72.5% with the full human corpus, while
-            the largest robot-pair setting reaches 49.0% at about twice that budget.</li>
+          <li>Success increases with the amount of paired human video used for pre-training. With 25% of the data,
+            WATCH matches within-video pre-training on all human data on in-context L2 and L3, and it exceeds that
+            baseline at 50% on L3 and 75% on L2.</li>
+          <li>With robot video counted at 8&times; the collection cost of human video, in-context L2 reaches 72.5% with
+            the full human data, and the largest robot-pair setting reaches 49.0% at about twice that cost.</li>
         </ul>
       </div>
     </div>
@@ -764,17 +754,16 @@
 <section class="section" id="analysis">
   <div class="container is-wide">
     <div class="has-text-centered">
-      <h2 class="title is-3">What Cross-Video Pre-Training Learns</h2>
+      <h2 class="title is-3">Analysis</h2>
       <p class="content lead-narrow has-text-justified">
-        Before any robot post-training, we examine how WATCH uses the reference, whether its motion representation
-        transfers across people and robots, and where it attends, on held-out EgoVerse pairs, RoboMIND robot data
-        and MimicDroid robot observations.
+        We analyze the pre-trained model before robot post-training, on held-out EgoVerse pairs, RoboMIND and
+        MimicDroid observations.
       </p>
     </div>
 
     <!-- ---- sensitivity to the reference ---- -->
     <div class="ana-block">
-      <h3 class="title is-4 has-text-centered">Conditioning Tracks the Task, Not the Source</h3>
+      <h3 class="title is-4 has-text-centered">Sensitivity to the Reference</h3>
       <div class="ana-row">
         <div class="card">
           <p class="card-title">Action MSE by reference</p>
@@ -808,18 +797,17 @@
       </div>
       <div class="content finding has-text-justified">
         <p>
-          We condition the same query on a matched reference, a similar-motion reference from a <b>different
-          collection source</b>, and a <b>different-task</b> reference from the same source. Action MSE rises from
-          0.0322 to 0.0335 under the source change and to 0.0367 under the task change, and only the task change is
-          significant. With a reference from another source, WATCH&rsquo;s attention stays on the acting hands and the
-          manipulated object, so reference conditioning follows task-relevant interaction across sources.
+          The same query is conditioned on a matched reference, a similar-motion reference from a different collection
+          source, and a different-task reference from the same source. Action MSE is 0.0322, 0.0335 and 0.0367,
+          respectively; only the task change is significant. With a reference from another source, attention stays on
+          the hands and the manipulated object.
         </p>
       </div>
     </div>
 
     <!-- ---- Figure 5 ---- -->
     <div class="ana-block">
-      <h3 class="title is-4 has-text-centered">Embodiment-Invariant Motion from Human Demonstrations</h3>
+      <h3 class="title is-4 has-text-centered">Embodiment-Invariant Features</h3>
       <div class="card" style="max-width:1040px; margin:1rem auto 0;">
         <img class="fig-img" src="./assets/fig/invariance_v2_legend.png" alt="Legend: original video model, within-video, WATCH" style="max-width:640px; margin:0 auto 6px;">
         <div class="fig-row three">
@@ -830,19 +818,18 @@
       </div>
       <div class="content finding has-text-justified">
         <p>
-          Cross-embodiment transfer needs corresponding motions to align and the features to keep how those motions
-          unfold. On 359 held-out EgoVerse windows and 396 RoboMIND windows from three robots, WATCH ranks the matching
-          motion from a <b>different human source</b> (a) or a <b>different robot</b> (b) earlier than the original
-          video model and within-video pre-training. A regressor fit on two embodiments and tested on the third (c)
-          predicts future motion from WATCH&rsquo;s features at a Spearman correlation of <b>0.18</b> on human and
-          <b>0.24</b> on robot windows, against 0.06 and 0.01 for the original video model.
+          On 359 held-out EgoVerse windows and 396 RoboMIND windows from three robots, WATCH retrieves the matching
+          motion from a different human source (a) and a different robot (b) at higher rank than the original video
+          model and within-video pre-training. A regressor trained on two embodiments and tested on the third (c)
+          reaches a Spearman correlation of 0.18 (human) and 0.24 (robot) from WATCH features, compared with 0.06 and
+          0.01 for the original video model.
         </p>
       </div>
     </div>
 
     <!-- ---- Figure 6 ---- -->
     <div class="ana-block">
-      <h3 class="title is-4 has-text-centered">Joint Supervision Focuses Attention on Interactions</h3>
+      <h3 class="title is-4 has-text-centered">Effect of Joint Action&ndash;Video Supervision</h3>
       <div class="card sup-card">
         <div class="tabs-row" id="sup-scenes" style="margin:0 0 0.8rem;"></div>
         <div class="sup-row">
@@ -864,11 +851,10 @@
       </div>
       <div class="content finding has-text-justified">
         <p>
-          All three models use cross-video pairing and differ only in what they receive and predict: actions only,
-          future frames only, or both. Action-only attention peaks near the image boundaries and video-only attention
-          spreads over the interaction region and the surrounding scene. <b>Joint action&ndash;video supervision</b>
-          concentrates both the action-slot and the video-slot attention on the acting hand and the object, around the
-          faucet and at the grasp, on MimicDroid robot frames the model never saw during pre-training.
+          All three models use cross-video pairs and differ only in the prediction target: actions, future frames, or
+          both. Action-only attention peaks near the image boundaries, and video-only attention spreads over the scene.
+          With joint supervision, both action-slot and video-slot attention concentrate on the hand and the object.
+          Frames are from MimicDroid, which is not seen during pre-training.
         </p>
       </div>
     </div>
@@ -886,10 +872,8 @@
       </div>
       <div class="content finding has-text-justified">
         <p>
-          Attention to the current frame under the original video model (Cosmos-Predict2.5), the same model
-          pre-trained within-video on the same human data, and WATCH. Robot frames are the side-right camera of GR1
-          MimicDroid rollouts; human frames are EgoVerse queries. The original video model spreads attention over
-          edges and background, and WATCH concentrates it on the acting hand and the manipulated object.
+          Current-frame attention of the original video model (Cosmos-Predict2.5), within-video pre-training and WATCH.
+          Robot frames are from the side-right camera of GR1 MimicDroid rollouts; human frames are EgoVerse queries.
         </p>
       </div>
     </div>
@@ -898,9 +882,8 @@
     <div class="ana-block">
       <h3 class="title is-4 has-text-centered">Prediction on Unseen Data</h3>
       <p class="content has-text-centered lead-narrow" style="margin-bottom:0;">
-        Before any robot post-training, action and video prediction on three held-out sets that no model was
-        pre-trained on: RoboMIND (robot), Humanoid Everyday (humanoid teleoperation) and EgoDex (human, a different
-        egocentric rig), 2,048 clips per set.
+        Action and video prediction before robot post-training on three datasets not used in pre-training: RoboMIND
+        (robot), Humanoid Everyday (humanoid teleoperation) and EgoDex (human). 2,048 clips per dataset.
       </p>
       <div class="ctrl-row">
         <div class="ctrl" id="unseen-set"><span class="lab">Held-out set</span><button data-v="RoboMIND" class="is-active">RoboMIND</button><button data-v="Humanoid_Everyday">Humanoid Everyday</button><button data-v="EgoDex">EgoDex</button></div>
@@ -911,7 +894,7 @@
       </div>
       <div class="card unseen-card">
         <p class="card-title">Generated future video</p>
-        <p class="card-sub">Each model predicts the future from the current frame; WATCH also receives the reference.</p>
+        <p class="card-sub">Predicted from the current frame. WATCH is also given the reference.</p>
         <div class="tabs-row" id="gen-samples" style="margin:0.3rem 0 0;"></div>
         <p class="instr"><span class="k">task &#8467;</span><span id="gen-instr"></span></p>
         <div class="gen-grid">
@@ -928,7 +911,7 @@
       </div>
       <div class="card unseen-card">
         <p class="card-title">Attention on an unseen robot (RoboMIND)</p>
-        <p class="card-sub">Bread in basket, Franka query. Video-slot attention on the reference, for a reference from the same robot (two views) and from a different robot (UR).</p>
+        <p class="card-sub">Video-slot attention on the reference for a Franka query (bread in basket), with references from the same robot and from a different robot (UR).</p>
         <div class="ctrl-row" style="margin:0.4rem 0 0.8rem;">
           <div class="ctrl" id="rm-model"><span class="lab">Model</span><button data-v="watch" class="is-active">WATCH (Ours)</button><button data-v="original_video_model">Original video model</button></div>
         </div>
@@ -941,22 +924,20 @@
       </div>
       <div class="content finding has-text-justified">
         <p>
-          On RoboMIND, robot data none of the models has seen, WATCH leads on every metric: compared with within-video
-          pre-training, end-effector MSE drops from 0.046 to 0.039 and accuracy rises from 55.6% to 68.5%, and its video
-          improves over the original video model where within-video pre-training degrades it. On EgoDex WATCH leads on
-          every action metric and on FVD and LPIPS. On Humanoid Everyday, co-training was trained on that dataset, yet
-          WATCH, which never saw it, matches or exceeds it on every metric but FVD, with half its end-effector error.
+          On RoboMIND, WATCH is best on all metrics. Compared with within-video pre-training, end-effector MSE decreases
+          from 0.046 to 0.039 and accuracy increases from 55.6% to 68.5%. On EgoDex, WATCH is best on all action
+          metrics and on FVD and LPIPS. On Humanoid Everyday, which co-training uses for training, WATCH matches or
+          exceeds co-training on all metrics except FVD, with half its end-effector error.
         </p>
       </div>
     </div>
 
     <!-- ---- human vs robot pairs: Figures 18 and 19 ---- -->
     <div class="ana-block">
-      <h3 class="title is-4 has-text-centered">Human and Robot Pairs Induce Similar Representations</h3>
+      <h3 class="title is-4 has-text-centered">Human Pairs vs. Robot Pairs</h3>
       <p class="content has-text-centered lead-narrow" style="margin-bottom:0;">
-        We compare WATCH trained on about 1K hours of human pairs with the same objective trained on about 1K hours
-        of RoboMIND robot pairs. Only the robot-trained model sees RoboMIND during pre-training, so agreement on
-        RoboMIND windows means the human-trained model matches a model trained on the test robots.
+        WATCH trained on about 1K hours of human pairs is compared with the same objective trained on about 1K hours of
+        RoboMIND robot pairs. Only the robot-pair model sees RoboMIND in pre-training.
       </p>
       <div class="card unseen-card">
         <p class="card-title">Agreement with the robot-trained model, layer by layer</p>
@@ -985,12 +966,10 @@
       </details>
       <div class="content finding has-text-justified">
         <p>
-          On robot windows the human-trained and the robot-trained models agree: every cluster holds both greens,
-          and a window&rsquo;s two copies sit at a mean distance of 0.03 to 0.06 after alignment, against 0.12 to 0.31
-          for the original video model, on every robot and at both layers. Matching each window across models over
-          layers 10&ndash;27, human-trained WATCH reaches a mean match@1 of <b>0.50</b> on robot windows and
-          <b>0.71</b> on human windows, against 0.13 and 0.11 for the original video model. Human demonstrations are
-          a scalable source for learning robot-relevant motion representations.
+          After alignment, a window&rsquo;s features from the human-pair and robot-pair models are 0.03 to 0.06 apart,
+          compared with 0.12 to 0.31 for the original video model. Over layers 10&ndash;27, the mean match@1 with the
+          robot-pair model is 0.50 on robot windows and 0.71 on human windows for WATCH, and 0.13 and 0.11 for the
+          original video model.
         </p>
       </div>
     </div>
@@ -1139,7 +1118,7 @@
   (function () {
     var MODES = {
       pre: {
-        note: 'Cross-video pre-training on EgoVerse: the reference comes from a different demonstration and collection source than the query. Only human data is used.',
+        note: 'Pre-training on EgoVerse. The reference is a different demonstration of the same task. Only human data is used.',
         task: 'Put cup on saucer',
         ref: VID + 'method/pretrain_reference_aria_cup_on_saucer.mp4', refSub: 'another collection source',
         refActSub: 'human hand poses',
@@ -1149,7 +1128,7 @@
         removed: false
       },
       icl: {
-        note: 'In-context post-training on MimicDroid L1, the training scenes (GR1 humanoid): a human demonstration of the same task fills the reference slots and the model predicts robot actions in the robot’s own control space.',
+        note: 'In-context post-training on MimicDroid L1 (GR1 humanoid). A human demonstration of the task is the reference, and the model predicts robot actions.',
         task: 'Pick and place sink to cabinet',
         ref: VID + 'method/incontext_reference_human_PnPSinkToCabinet_L1.mp4', refSub: 'human demonstration',
         refActSub: 'human hand poses',
@@ -1159,7 +1138,7 @@
         removed: false
       },
       cf: {
-        note: 'Context-free post-training: the reference slots are removed, not blanked, and the model predicts from the robot’s current observation, state and task alone (TableTop-Sim, bimanual ALOHA).',
+        note: 'Context-free post-training (TableTop-Sim, bimanual ALOHA). The reference slots are removed.',
         task: 'Dish drainer',
         ref: null, refSub: '', refActSub: '',
         stateSub: 'ALOHA robot',
