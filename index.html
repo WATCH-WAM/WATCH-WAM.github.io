@@ -17,410 +17,267 @@
   <link rel="stylesheet" href="./static/css/index.css">
 
   <style>
-    /* --- WATCH page-specific styling (palette follows the paper figures) --- */
+    /* WATCH project page, plain paper style */
     :root {
-      --ours: #3f8a4c;        /* WATCH green */
-      --ours-bg: #eef6ec;
+      --ours: #3f8a4c;
+      --ours-bg: #eef5ec;
       --ours-line: #c9e3c4;
-      --ref: #4a78a8;         /* reference video blue */
+      --ref: #4a78a8;
       --ref-bg: #eaf1f8;
-      --cur: #c79a1e;         /* current / query frame gold */
-      --ink: #363636;
-      --ink-soft: #777;
+      --cur: #c79a1e;
+      --ink: #222;
+      --ink-soft: #666;
+      --rule: #dcdcdc;
     }
+    body { color: var(--ink); font-size: 16px; }
+    .content p, .content li { line-height: 1.65; }
+    a { color: var(--ours); }
+    a:hover { color: #2c6b37; }
     .watch-accent { color: var(--ours); }
-    .section-band { background: #f6faf5; }
-    .lead-narrow { max-width: 820px; margin: 0 auto; }
-    .subhead {
-      font-weight: 700;
-      color: var(--ours);
-      letter-spacing: 0.04em;
-      text-transform: uppercase;
-      font-size: 0.85rem;
-      margin-bottom: 0.4rem;
-    }
-    /* cap the wide sections at 1040px; Bulma's widescreen .container rule would otherwise widen them to full width */
-    .container.is-wide:not(.is-max-desktop):not(.is-max-widescreen) { max-width: 1040px; }
+    .lead-narrow { max-width: 860px; margin: 0 auto; }
+    .container.is-wide:not(.is-max-desktop):not(.is-max-widescreen) { max-width: 1000px; }
 
-    .video-card {
-      background: #fff;
-      border-radius: 12px;
-      overflow: hidden;
-      box-shadow: 0 1px 4px rgba(0,0,0,0.08);
-    }
+    .section { padding: 2.5rem 1.5rem; }
+    h2.title.is-3 { font-family: 'Google Sans', sans-serif; font-weight: 600; margin-bottom: 1.2rem !important; }
+    h3.title.is-4 { font-family: 'Google Sans', sans-serif; font-weight: 600; font-size: 1.3rem; margin-top: 0; margin-bottom: 0.8rem !important; }
+    .sub-block { margin-top: 3rem; }
+    .sec-rule { border: none; border-top: 1px solid var(--rule); max-width: 1000px; margin: 0 auto; }
+
     .video-card video { display: block; width: 100%; height: auto; }
-
-    .kpi {
-      display: inline-flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 14px 24px;
-      background: #fff;
-      border-radius: 12px;
-      box-shadow: 0 1px 4px rgba(0,0,0,0.08);
-      margin: 6px;
-      min-width: 180px;
-    }
-    .kpi .big { font-size: 1.9rem; font-weight: 800; color: var(--ours); line-height: 1.05; }
-    .kpi .big .from { font-size: 1.1rem; color: #999; font-weight: 600; }
-    .kpi .small { font-size: 0.85rem; color: #555; margin-top: 6px; text-align: center; }
-
-    /* Teaser placeholder shown until assets/teaser.mp4 exists */
     .teaser-missing {
-      display: none;
-      aspect-ratio: 16 / 9;
-      border: 2px dashed #cfd8cc;
-      border-radius: 12px;
-      background: #f6faf5;
-      color: #8a9a86;
-      align-items: center;
-      justify-content: center;
-      flex-wrap: wrap;
-      gap: 4px;
-      padding: 0 16px;
-      text-align: center;
-      font-size: 0.95rem;
+      display: none; aspect-ratio: 16 / 9; border: 1px dashed #bbb; background: #fafafa; color: #888;
+      align-items: center; justify-content: center; flex-wrap: wrap; gap: 4px; padding: 0 16px; text-align: center; font-size: 0.95rem;
     }
 
-    /* Within-video vs cross-video explainer */
-    .contrast-row { display: flex; gap: 18px; flex-wrap: wrap; justify-content: center; margin: 1.2rem auto 0; max-width: 900px; }
-    .contrast-card {
-      flex: 1 1 380px;
-      background: #fff;
-      border-radius: 12px;
-      padding: 16px 18px;
-      box-shadow: 0 1px 4px rgba(0,0,0,0.08);
-      text-align: left;
-    }
-    .contrast-card.ours { background: var(--ours-bg); border: 1px solid var(--ours-line); box-shadow: none; }
-    .contrast-card h4 { font-size: 1.02rem; font-weight: 700; margin-bottom: 0.4rem; color: var(--ink); }
+    /* small captions under figures */
+    .caption { font-size: 0.9rem; color: var(--ink-soft); line-height: 1.5; margin-top: 0.5rem; }
+    .caption b { color: var(--ink); }
+
+    /* within-video vs cross-video */
+    .contrast-row { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; margin: 1.6rem auto 0; max-width: 860px; }
+    @media (max-width: 760px) { .contrast-row { grid-template-columns: 1fr; } }
+    .contrast-card { text-align: left; padding-left: 14px; border-left: 3px solid #ccc; }
+    .contrast-card.ours { border-left-color: var(--ours); }
+    .contrast-card h4 { font-size: 1rem; font-weight: 700; margin-bottom: 0.3rem; color: var(--ink); }
     .contrast-card.ours h4 { color: var(--ours); }
-    .contrast-card .formula {
-      font-family: "Courier New", monospace;
-      font-size: 0.86rem;
-      background: rgba(0,0,0,0.035);
-      border-radius: 6px;
-      padding: 6px 8px;
-      margin: 0.5rem 0;
-      overflow-x: auto;
-      white-space: nowrap;
-    }
-    .contrast-card p { font-size: 0.93rem; color: #4a4a4a; }
+    .contrast-card .formula { font-family: 'Times New Roman', serif; font-style: italic; font-size: 1.02rem; margin: 0.4rem 0; overflow-x: auto; white-space: nowrap; }
+    .contrast-card p { font-size: 0.93rem; color: #444; line-height: 1.55; }
 
-    /* --- Data section --- */
-    .pipeline { display: flex; gap: 10px; justify-content: center; align-items: stretch; flex-wrap: wrap; margin: 1.2rem auto 0; max-width: 960px; }
-    .pipe-step {
-      flex: 1 1 200px;
-      background: #fff;
-      border-radius: 12px;
-      padding: 12px 14px;
-      box-shadow: 0 1px 4px rgba(0,0,0,0.08);
-      text-align: left;
-    }
-    .pipe-step .num {
-      display: inline-block; width: 22px; height: 22px; line-height: 22px; text-align: center;
-      border-radius: 50%; background: var(--ours); color: #fff; font-size: 0.8rem; font-weight: 700; margin-right: 6px;
-    }
-    .pipe-step b { font-size: 0.95rem; }
-    .pipe-step p { font-size: 0.86rem; color: #555; margin-top: 0.35rem; }
-    .pipe-arrow { align-self: center; color: var(--ours); font-size: 1.4rem; }
-    @media (max-width: 760px) { .pipe-arrow { display: none; } }
+    /* data statistics */
+    .steps { max-width: 860px; margin: 1rem auto 0; padding-left: 1.4rem; }
+    .steps li { margin-bottom: 0.35rem; line-height: 1.6; }
+    .stat-table { margin: 1.4rem auto 0; border-collapse: collapse; font-size: 0.92rem; }
+    .stat-table th, .stat-table td { padding: 5px 18px; text-align: center; }
+    .stat-table th { font-weight: 400; color: var(--ink-soft); font-size: 0.82rem; border-bottom: 1px solid var(--rule); }
+    .stat-table td { font-weight: 700; font-size: 1.1rem; }
 
-    .tabs-row { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin: 1.4rem auto 1rem; }
+    /* selector buttons (Bulma small-button look) */
+    .tabs-row { display: flex; flex-wrap: wrap; gap: 5px; justify-content: center; margin: 1rem auto 0.9rem; }
     .tab-btn {
-      border: 1px solid #d8ddd6; background: #fff; color: var(--ink);
-      border-radius: 999px; padding: 6px 14px; font-size: 0.88rem; cursor: pointer;
-      transition: background .15s, border-color .15s;
+      border: 1px solid #d0d0d0; background: #fff; color: #333; border-radius: 3px;
+      padding: 3px 10px; font-size: 0.82rem; cursor: pointer; line-height: 1.5; font-family: inherit;
     }
-    .tab-btn:hover { border-color: var(--ours); }
-    .tab-btn.is-active { background: var(--ours); border-color: var(--ours); color: #fff; font-weight: 600; }
-    .tab-btn .src { opacity: 0.75; font-size: 0.8rem; margin-left: 4px; }
+    .tab-btn:hover { border-color: #999; }
+    .tab-btn.is-active { background: var(--ours); border-color: var(--ours); color: #fff; }
+    .tab-btn .src { opacity: 0.7; font-size: 0.76rem; margin-left: 4px; }
 
     .retrieval { display: grid; grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.6fr); gap: 20px; align-items: start; }
     @media (max-width: 820px) { .retrieval { grid-template-columns: 1fr; } }
-    .panel-cap { font-weight: 700; font-size: 0.95rem; margin-bottom: 8px; color: var(--ink); }
-    .panel-cap .vsub { font-weight: 400; color: var(--ink-soft); font-size: 0.84rem; }
-    .query-card { border: 4px solid var(--cur); border-radius: 12px; overflow: hidden; background: #000; }
+    .panel-cap { font-weight: 600; font-size: 0.9rem; margin-bottom: 6px; color: var(--ink); }
+    .panel-cap .vsub { font-weight: 400; color: var(--ink-soft); font-size: 0.82rem; }
+    .query-card { border: 3px solid var(--cur); background: #000; }
     .query-card video { display: block; width: 100%; height: auto; }
-    .query-info { margin-top: 10px; font-size: 0.9rem; color: #555; }
-    .query-info .task { font-weight: 700; color: var(--ink); font-size: 1.02rem; }
+    .query-info { margin-top: 6px; font-size: 0.9rem; color: #555; }
+    .query-info .task { font-weight: 600; color: var(--ink); }
 
-    .ref-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
+    .ref-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 5px; }
     @media (max-width: 540px) { .ref-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
-    .ref-tile { position: relative; border-radius: 8px; overflow: hidden; background: #111; border: 3px solid transparent; }
+    .ref-tile { position: relative; overflow: hidden; background: #111; border: 2px solid transparent; }
     .ref-tile.cross { border-color: var(--ref); }
     .ref-tile.same  { border-color: #c9cdd2; }
     .ref-tile video { display: block; width: 100%; aspect-ratio: 16 / 9; object-fit: cover; }
-    .ref-tile .badge {
-      position: absolute; left: 4px; top: 4px;
-      font-size: 0.68rem; font-weight: 700; padding: 1px 6px; border-radius: 999px;
-      background: rgba(255,255,255,0.9); color: #444;
-    }
+    .ref-tile .badge { position: absolute; left: 0; top: 0; font-size: 0.66rem; padding: 0 5px; background: rgba(255,255,255,0.85); color: #444; }
     .ref-tile.cross .badge { background: var(--ref); color: #fff; }
-    .ref-tile .rank { position: absolute; right: 5px; bottom: 3px; font-size: 0.68rem; color: #fff; text-shadow: 0 0 3px #000; }
-    .legend { display: flex; gap: 16px; font-size: 0.84rem; color: #555; margin-top: 10px; flex-wrap: wrap; }
-    .legend .sw { display: inline-block; width: 14px; height: 14px; border-radius: 3px; vertical-align: -2px; margin-right: 5px; border: 3px solid; }
+    .ref-tile .rank { position: absolute; right: 4px; bottom: 2px; font-size: 0.66rem; color: #fff; text-shadow: 0 0 3px #000; }
+    .legend { display: flex; gap: 16px; font-size: 0.82rem; color: #555; margin-top: 8px; flex-wrap: wrap; }
+    .legend .sw { display: inline-block; width: 12px; height: 12px; vertical-align: -1px; margin-right: 5px; border: 2px solid; }
     .legend .sw.cross { border-color: var(--ref); }
     .legend .sw.same  { border-color: #c9cdd2; }
-    /* --- Model section: slot diagram --- */
-    .mode-row { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin: 1.2rem auto 0.4rem; }
+
+    /* model slot diagram */
+    .mode-row { display: flex; gap: 5px; justify-content: center; flex-wrap: wrap; margin: 1.2rem auto 0.4rem; }
     .mode-note { text-align: center; font-size: 0.9rem; color: #555; max-width: 760px; margin: 0.2rem auto 1rem; min-height: 2.6em; }
-    .diagram-wrap { overflow-x: auto; margin: 0 auto; max-width: 1000px; }
+    .diagram-wrap { overflow-x: auto; margin: 0 auto; max-width: 960px; }
     .diagram {
-      min-width: 720px;
-      background: #fff; border-radius: 14px; box-shadow: 0 1px 4px rgba(0,0,0,0.08);
-      padding: 18px 18px 14px;
-      display: grid;
-      grid-template-columns: repeat(6, minmax(0, 1fr));
-      column-gap: 12px; row-gap: 8px;
-      align-items: end;
+      min-width: 720px; border: 1px solid var(--rule); padding: 16px;
+      display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); column-gap: 12px; row-gap: 8px; align-items: end;
     }
-    .slot { display: flex; flex-direction: column; align-items: center; text-align: center; transition: opacity .25s, filter .25s; }
-    .slot .cap { font-size: 0.8rem; font-weight: 700; margin-top: 6px; line-height: 1.25; min-height: 2.5em; }
-    .slot .cap .vsub { display: block; font-weight: 400; color: var(--ink-soft); font-size: 0.74rem; }
-    .slot .tile { width: 100%; aspect-ratio: 4 / 3; border-radius: 8px; overflow: hidden; background: #eee; border: 3px solid transparent; }
+    .slot { display: flex; flex-direction: column; align-items: center; text-align: center; transition: opacity .25s, filter .25s; position: relative; }
+    .slot .cap { font-size: 0.78rem; font-weight: 600; margin-top: 5px; line-height: 1.25; min-height: 2.5em; }
+    .slot .cap .vsub { display: block; font-weight: 400; color: var(--ink-soft); font-size: 0.72rem; }
+    .slot .tile { width: 100%; aspect-ratio: 4 / 3; overflow: hidden; background: #eee; border: 2px solid transparent; }
     .slot .tile video, .slot .tile img { display: block; width: 100%; height: 100%; object-fit: cover; }
-    .slot .chip {
-      width: 100%; aspect-ratio: 4 / 3; border-radius: 8px; display: flex; align-items: center; justify-content: center;
-      font-family: "Courier New", monospace; font-size: 1.05rem; font-weight: 700;
-    }
+    .slot .chip { width: 100%; aspect-ratio: 4 / 3; display: flex; align-items: center; justify-content: center; font-family: 'Times New Roman', serif; font-style: italic; font-size: 1.15rem; }
     .slot.ref .tile { border-color: var(--ref); }
-    .slot.ref .chip { background: var(--ref-bg); border: 2px dashed var(--ref); color: var(--ref); }
+    .slot.ref .chip { background: var(--ref-bg); border: 1px solid var(--ref); color: var(--ref); }
     .slot.ref .cap { color: var(--ref); }
     .slot.cur .tile { border-color: var(--cur); }
-    .slot.cur .chip { background: #fbf3dc; border: 2px solid var(--cur); color: #9a7512; }
-    .slot.cur .cap { color: #9a7512; }
-    .slot.noisy .chip, .slot.noisy .tile {
-      background: repeating-linear-gradient(45deg, #e3eee0 0 6px, #f4f8f2 6px 12px);
-      border: 2px dashed var(--ours); color: var(--ours);
-    }
+    .slot.cur .chip { background: #fbf5e3; border: 1px solid var(--cur); color: #8a6a10; }
+    .slot.cur .cap { color: #8a6a10; }
+    .slot.noisy .chip, .slot.noisy .tile { background: repeating-linear-gradient(45deg, #e6efe4 0 5px, #f7faf6 5px 10px); border: 1px dashed var(--ours); color: var(--ours); }
     .slot.noisy .cap { color: var(--ours); }
     .slot.out .tile { border-color: var(--ours); }
-    .slot.out .chip { background: var(--ours-bg); border: 2px solid var(--ours); color: var(--ours); }
+    .slot.out .chip { background: var(--ours-bg); border: 1px solid var(--ours); color: var(--ours); }
     .slot.out .cap { color: var(--ours); }
     .slot.removed .tile, .slot.removed .chip, .slot.removed .cap { opacity: 0.18; filter: grayscale(1); }
     .diagram > .slot { align-self: start; }
-    .slot { position: relative; }
-    .slot .gone {
-      display: none; position: absolute; left: 0; right: 0; top: 0; aspect-ratio: 4 / 3;
-      align-items: center; justify-content: center;
-      font-size: 0.76rem; color: #b04a4a; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase;
-    }
+    .slot .gone { display: none; position: absolute; left: 0; right: 0; top: 0; aspect-ratio: 4 / 3; align-items: center; justify-content: center; font-size: 0.74rem; color: #a44; font-weight: 600; }
     .slot.removed .gone { display: flex; }
-    .task-chip {
-      grid-column: 1 / span 3; align-self: center; justify-self: start;
-      background: #fbeef2; border: 1px solid #e7b9c7; color: #8a2c4a; border-radius: 8px;
-      padding: 6px 12px; font-size: 0.86rem;
-    }
-    .task-chip .k { color: #999; font-size: 0.76rem; margin-right: 6px; }
-    .model-bar {
-      grid-column: 1 / -1; margin: 4px 0;
-      background: linear-gradient(90deg, #7fa877, #6a9a60); color: #fff; border-radius: 10px;
-      text-align: center; font-weight: 700; letter-spacing: 0.03em; padding: 12px 8px; font-size: 1.02rem;
-      position: relative;
-    }
-    .model-bar .sub { font-weight: 400; font-size: 0.8rem; opacity: 0.9; margin-left: 8px; }
-    .up { grid-row: auto; text-align: center; color: #9aa; font-size: 0.9rem; line-height: 1; }
-    .legend-row { display: flex; gap: 18px; justify-content: center; flex-wrap: wrap; font-size: 0.82rem; color: #555; margin-top: 10px; }
-    .legend-row .sw { display: inline-block; width: 14px; height: 14px; border-radius: 3px; vertical-align: -2px; margin-right: 5px; }
-    /* --- Post-training results --- */
-    .ctrl-row { display: flex; gap: 18px; justify-content: center; flex-wrap: wrap; align-items: center; margin: 1rem auto; }
-    .ctrl { display: inline-flex; gap: 0; border: 1px solid #d8ddd6; border-radius: 999px; overflow: hidden; background: #fff; }
-    .ctrl .lab { font-size: 0.8rem; color: #888; padding: 6px 10px 6px 14px; align-self: center; }
-    .ctrl button { border: none; background: transparent; padding: 6px 13px; font-size: 0.86rem; cursor: pointer; color: var(--ink); }
-    .ctrl button.is-active { background: var(--ours); color: #fff; font-weight: 600; }
-    .vbox { position: relative; border-radius: 8px; overflow: hidden; background: #eee; border: 3px solid transparent; aspect-ratio: 1 / 1; }
-    .vbox video { display: block; width: 100%; height: 100%; object-fit: cover; }
+    .task-chip { grid-column: 1 / span 3; align-self: center; justify-self: start; font-size: 0.86rem; color: #444; }
+    .task-chip .k { color: #999; margin-right: 6px; font-family: 'Times New Roman', serif; font-style: italic; }
+    .model-bar { grid-column: 1 / -1; margin: 4px 0; background: #5d8a5a; color: #fff; text-align: center; font-weight: 600; padding: 9px 8px; font-size: 0.98rem; }
+    .model-bar .sub { font-weight: 400; font-size: 0.8rem; opacity: 0.85; margin-left: 8px; }
+    .legend-row { display: flex; gap: 18px; justify-content: center; flex-wrap: wrap; font-size: 0.8rem; color: #555; margin-top: 8px; }
+    .legend-row .sw { display: inline-block; width: 12px; height: 12px; vertical-align: -1px; margin-right: 5px; }
+
+    /* segmented controls */
+    .ctrl-row { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; align-items: center; margin: 0.8rem auto; }
+    .ctrl { display: inline-flex; align-items: center; }
+    .ctrl .lab { font-size: 0.82rem; color: #777; margin-right: 8px; }
+    .ctrl button { border: 1px solid #d0d0d0; background: #fff; padding: 3px 11px; font-size: 0.82rem; cursor: pointer; color: #333; margin-left: -1px; font-family: inherit; line-height: 1.5; }
+    .ctrl button:first-of-type { border-radius: 3px 0 0 3px; margin-left: 0; }
+    .ctrl button:last-of-type { border-radius: 0 3px 3px 0; }
+    .ctrl button.is-active { background: var(--ours); border-color: var(--ours); color: #fff; position: relative; z-index: 1; }
+
+    .vbox { position: relative; overflow: hidden; background: #eee; border: 2px solid transparent; aspect-ratio: 1 / 1; }
+    .vbox video, .vbox img { display: block; width: 100%; height: 100%; object-fit: cover; }
     .vbox.ref { border-color: var(--ref); }
     .vbox.ours { border-color: var(--ours); }
     .vbox.base { border-color: #c9cdd2; }
-    .outcome {
-      position: absolute; right: 6px; top: 6px; font-size: 0.7rem; font-weight: 700; padding: 1px 7px; border-radius: 999px;
-    }
-    .outcome.success { background: #e3f4e6; color: #2d7a3a; }
-    .outcome.fail { background: #fbe4e4; color: #b03a3a; }
-    .ep-row { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 9px; align-items: center; }
-    .ep-row .lab { font-size: 0.74rem; color: #999; margin-right: 2px; }
-    .ep-btn {
-      border: 1px solid #d8ddd6; background: #fff; border-radius: 999px; padding: 1px 9px; font-size: 0.74rem; cursor: pointer; color: #555;
-    }
-    .ep-btn.success::after { content: " \2713"; color: #2d7a3a; }
-    .ep-btn.fail::after { content: " \2717"; color: #b03a3a; }
-    .ep-btn.is-active { border-color: var(--ours); background: var(--ours-bg); color: var(--ink); font-weight: 600; }
+    .vbox.gt { border-color: var(--cur); }
+    .ep-row { display: flex; gap: 4px; flex-wrap: wrap; margin-top: 8px; align-items: center; }
+    .ep-row .lab { font-size: 0.76rem; color: #888; margin-right: 4px; }
+    .ep-btn { border: 1px solid #d0d0d0; background: #fff; border-radius: 3px; padding: 0 7px; font-size: 0.74rem; cursor: pointer; color: #555; font-family: inherit; }
+    .ep-btn.is-active { border-color: var(--ours); color: var(--ink); font-weight: 600; box-shadow: inset 0 -2px 0 var(--ours); }
 
-    .cmp-layout { display: grid; grid-template-columns: minmax(0, 0.8fr) auto minmax(0, 3fr); gap: 14px; align-items: center; max-width: 1000px; margin: 0 auto; }
+    .cmp-layout { display: grid; grid-template-columns: minmax(0, 0.8fr) auto minmax(0, 3fr); gap: 12px; align-items: end; max-width: 1000px; margin: 0 auto; }
     @media (max-width: 820px) { .cmp-layout { grid-template-columns: 1fr; } .cmp-layout .arrow { display: none; } }
-    .cmp-layout .arrow { color: var(--ref); font-size: 1.6rem; }
-    .cmp-methods { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
-    .cmp-col .mname { font-size: 0.86rem; font-weight: 700; margin-bottom: 5px; color: #555; text-align: center; }
+    .cmp-layout .arrow { color: #999; font-size: 1.3rem; align-self: center; }
+    .cmp-methods { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+    .cmp-col .mname, .cmp-ref .mname { font-size: 0.86rem; font-weight: 600; margin-bottom: 4px; color: #555; text-align: center; }
     .cmp-col.ours .mname { color: var(--ours); }
-    .cmp-col { border: 1px solid transparent; border-radius: 12px; padding: 8px; }
-    .cmp-col.ours { background: var(--ours-bg); border-color: var(--ours-line); }
-    .cmp-ref .mname { font-size: 0.86rem; font-weight: 700; margin-bottom: 5px; color: var(--ref); text-align: center; }
-    .level-tabs { max-width: 1000px; margin: 1rem auto; display: grid; grid-template-columns: auto 1fr; gap: 8px 12px; align-items: center; }
-    .level-tabs .lv { font-weight: 800; color: var(--ours); font-size: 0.95rem; text-align: right; }
-    .level-tabs .lv .d { display: block; font-weight: 400; color: #888; font-size: 0.72rem; }
-    .level-tabs .btns { display: flex; flex-wrap: nowrap; gap: 6px; overflow-x: auto; }
-    .level-tabs .tab-btn { white-space: nowrap; flex: none; }
-    .views-panel { max-width: 1040px; margin: 0 auto; background: #fff; border-radius: 14px; box-shadow: 0 1px 4px rgba(0,0,0,0.08); padding: 14px 16px; }
-    .views-head { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; }
-    .views-task { font-weight: 700; font-size: 1.02rem; color: var(--ink); }
-    .views-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .cmp-ref .mname { color: var(--ref); }
+    .level-tabs { max-width: 1000px; margin: 1rem auto; display: grid; grid-template-columns: auto 1fr; gap: 6px 12px; align-items: center; }
+    .level-tabs .lv, .frame-tabs .lv { font-weight: 700; color: #444; font-size: 0.88rem; text-align: right; }
+    .level-tabs .lv .d, .frame-tabs .lv .d { display: block; font-weight: 400; color: #999; font-size: 0.72rem; }
+    .level-tabs .btns, .frame-tabs .btns { display: flex; flex-wrap: nowrap; gap: 5px; overflow-x: auto; }
+    .level-tabs .tab-btn, .frame-tabs .tab-btn { white-space: nowrap; flex: none; }
+    .views-panel { max-width: 1000px; margin: 0 auto; }
+    .views-head { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; margin-bottom: 8px; }
+    .views-task { font-weight: 600; font-size: 1rem; color: var(--ink); }
+    .views-row { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
     @media (max-width: 760px) { .views-row { grid-template-columns: 1fr; } }
-    .views3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
-    .grp-lab { font-size: 0.84rem; font-weight: 700; margin-bottom: 5px; }
+    .views3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 4px; }
+    .grp-lab { font-size: 0.86rem; font-weight: 600; margin-bottom: 4px; }
     .grp-lab.ref { color: var(--ref); }
     .grp-lab.ours { color: var(--ours); }
-    .outcome-inline { display: inline-block; margin-left: 6px; font-size: 0.7rem; font-weight: 700; padding: 1px 7px; border-radius: 999px; vertical-align: 1px; }
-    .outcome-inline.success { background: #e3f4e6; color: #2d7a3a; }
-    .outcome-inline.fail { background: #fbe4e4; color: #b03a3a; }
-    .cam-lab { text-align: center; font-size: 0.74rem; color: #888; margin-top: 2px; }
-    @media (max-width: 640px) {
-      .level-tabs { grid-template-columns: 1fr; }
-      .level-tabs .lv { text-align: left; }
-    }
-    /* --- Analysis --- */
-    .ana-block { margin-top: 2.2rem; }
-    .ana-block h3 { margin-bottom: 0.5rem !important; }
-    .ana-row { display: grid; grid-template-columns: minmax(0, 0.9fr) minmax(0, 2.1fr); gap: 20px; align-items: start; max-width: 1040px; margin: 1rem auto 0; }
+    .cam-lab { text-align: center; font-size: 0.74rem; color: #888; margin-top: 1px; }
+    @media (max-width: 640px) { .level-tabs, .frame-tabs { grid-template-columns: 1fr; } .level-tabs .lv, .frame-tabs .lv { text-align: left; } }
+
+    /* analysis */
+    .ana-block { margin-top: 3rem; }
+    .ana-row { display: grid; grid-template-columns: minmax(0, 0.9fr) minmax(0, 2.1fr); gap: 28px; align-items: start; max-width: 1000px; margin: 1rem auto 0; }
     @media (max-width: 900px) { .ana-row { grid-template-columns: 1fr; } }
-    .card { background: #fff; border-radius: 14px; box-shadow: 0 1px 4px rgba(0,0,0,0.08); padding: 14px 16px; }
-    .card-title { font-weight: 700; font-size: 0.92rem; color: var(--ink); margin-bottom: 2px; }
+    .card { padding: 0; box-shadow: none; border-radius: 0; background: transparent; color: inherit; }
+    .card-title { font-weight: 600; font-size: 0.92rem; color: var(--ink); margin-bottom: 2px; }
     .card-sub { font-size: 0.8rem; color: #888; margin-bottom: 8px; }
     .chart { position: relative; }
     .chart svg { display: block; width: 100%; height: auto; overflow: visible; }
     .chart .tick { font-size: 11px; fill: #8a8a8a; }
-    .chart .cat { font-size: 12px; fill: #363636; }
-    .chart .val { font-size: 12px; fill: #363636; font-weight: 700; }
+    .chart .cat { font-size: 12px; fill: #333; }
+    .chart .val { font-size: 12px; fill: #333; font-weight: 700; }
     .chart .plab { font-size: 11px; fill: #777; }
     .chart .grid { stroke: #ececec; stroke-width: 1; }
     .chart .hit { fill: transparent; cursor: default; }
-    .tip {
-      position: absolute; pointer-events: none; background: #fff; border: 1px solid #ddd; border-radius: 8px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.12); padding: 6px 9px; font-size: 0.78rem; color: #363636; white-space: nowrap;
-      opacity: 0; transition: opacity .1s; z-index: 5;
-    }
+    .tip { position: absolute; pointer-events: none; background: #fff; border: 1px solid #ccc; padding: 5px 8px; font-size: 0.78rem; color: #333; white-space: nowrap; opacity: 0; transition: opacity .1s; z-index: 5; }
     .tip b { display: block; }
     .attn-grid { display: grid; grid-template-columns: minmax(0, 1fr) 14px minmax(0, 3fr); gap: 8px; align-items: center; }
     .attn-grid .gt .cap-top, .attn-rows .cap-top { font-size: 0.74rem; color: #888; text-align: center; margin-bottom: 3px; }
-    .attn-rows { display: grid; grid-template-columns: 62px repeat(3, minmax(0, 1fr)); gap: 6px; align-items: center; }
-    .attn-rows .rl { font-size: 0.78rem; font-weight: 700; text-align: right; line-height: 1.2; }
+    .attn-rows { display: grid; grid-template-columns: 62px repeat(3, minmax(0, 1fr)); gap: 5px; align-items: center; }
+    .attn-rows .rl { font-size: 0.78rem; font-weight: 600; text-align: right; line-height: 1.2; }
     .attn-rows .rl.ours { color: var(--ours); }
     .attn-rows .rl.base { color: #666; }
     .attn-rows .rl.ref { color: var(--ref); }
     .attn-rows .rl .s { display: block; font-weight: 400; color: #999; font-size: 0.7rem; }
-    .vbox.gt { border-color: var(--cur); }
-    .vbox img { display: block; width: 100%; height: 100%; object-fit: cover; }
     .fig-img { display: block; width: 100%; height: auto; }
     .fig-row { display: grid; gap: 12px; align-items: end; }
     .fig-row.three { grid-template-columns: 0.333fr 0.284fr 0.351fr; }
-    .sup-card { max-width: 860px; margin: 1rem auto 0; }
-    .sup-row { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
-    @media (max-width: 640px) { .sup-row { grid-template-columns: 1fr; } }
-    .frame-tabs { display: grid; grid-template-columns: auto 1fr; gap: 6px 10px; align-items: center; margin-bottom: 0.9rem; }
-    .frame-tabs .lv { font-size: 0.8rem; font-weight: 700; color: #777; text-align: right; }
-    .frame-tabs .btns { display: flex; flex-wrap: nowrap; gap: 6px; overflow-x: auto; }
-    .frame-tabs .tab-btn { white-space: nowrap; flex: none; }
-    .frame-row { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; max-width: 620px; margin: 0 auto; }
-    .frame-row figure { margin: 0; }
-    .frame-row img { display: block; width: 100%; aspect-ratio: 1 / 1; object-fit: cover; border-radius: 8px; border: 3px solid #c9cdd2; }
-    .frame-row figure.ours img { border-color: var(--ours); }
-    .frame-row figcaption { text-align: center; font-size: 0.8rem; color: #777; margin-top: 4px; }
-    .frame-row figure.ours figcaption { color: var(--ours); font-weight: 600; }
-    .sup-head { text-align: center; font-weight: 700; font-size: 0.9rem; color: var(--ink); margin: 0 0 6px; }
-    .sup-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
-    .sup-pair figure { margin: 0; }
-    .sup-pair img { display: block; width: 100%; aspect-ratio: 1 / 1; object-fit: cover; border-radius: 8px; border: 3px solid #c9cdd2; }
-    .sup-pair figure.ours img { border-color: var(--ours); }
-    .sup-pair figcaption { text-align: center; font-size: 0.76rem; color: #777; margin-top: 3px; }
-    .sup-pair figure.ours figcaption { color: var(--ours); font-weight: 600; }
     @media (max-width: 760px) { .fig-row.three { grid-template-columns: 1fr; } }
     .fig-cap { font-size: 0.8rem; color: #666; text-align: center; margin-top: 4px; }
-    .finding { max-width: 820px; margin: 0.9rem auto 0; }
-    /* --- Unseen data: Table 6 + zero-shot generation + RoboMIND attention --- */
-    .unseen-card { max-width: 1040px; margin: 1rem auto 0; }
-    .metric-table { width: 100%; border-collapse: collapse; font-size: 0.86rem; margin: 0.3rem 0 0.2rem; }
-    .metric-table th:not([align]), .metric-table td { padding: 6px 8px; text-align: center; border-bottom: 1px solid #eee; vertical-align: middle; }
-    .metric-table th { font-weight: 600; color: #666; font-size: 0.78rem; }
-    .metric-table th.grp { color: #444; border-bottom: 1px solid #ddd; }
+    .sup-card { max-width: 820px; margin: 1rem auto 0; }
+    .sup-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    @media (max-width: 640px) { .sup-row { grid-template-columns: 1fr; } }
+    .frame-tabs { display: grid; grid-template-columns: auto 1fr; gap: 6px 10px; align-items: center; margin-bottom: 0.9rem; }
+    .frame-row { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; max-width: 620px; margin: 0 auto; }
+    .frame-row figure, .sup-pair figure { margin: 0; }
+    .frame-row img, .sup-pair img { display: block; width: 100%; aspect-ratio: 1 / 1; object-fit: cover; border: 2px solid #c9cdd2; }
+    .frame-row figure.ours img, .sup-pair figure.ours img { border-color: var(--ours); }
+    .frame-row figcaption, .sup-pair figcaption { text-align: center; font-size: 0.78rem; color: #777; margin-top: 3px; }
+    .frame-row figure.ours figcaption, .sup-pair figure.ours figcaption { color: var(--ours); font-weight: 600; }
+    .sup-head { text-align: center; font-weight: 600; font-size: 0.88rem; color: var(--ink); margin: 0 0 5px; }
+    .sup-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; }
+    .finding { max-width: 860px; margin: 1rem auto 0; }
+    .unseen-card { max-width: 1000px; margin: 1.4rem auto 0; }
+    .metric-table { width: 100%; border-collapse: collapse; font-size: 0.86rem; margin: 0.3rem 0 0.2rem; border-top: 2px solid #333; border-bottom: 2px solid #333; }
+    .metric-table th:not([align]), .metric-table td { padding: 5px 8px; text-align: center; vertical-align: middle; }
+    .metric-table thead tr:last-child th { border-bottom: 1px solid #333; }
+    .metric-table th { font-weight: 600; color: #444; font-size: 0.8rem; }
+    .metric-table th.grp { border-bottom: 1px solid #bbb; }
     .metric-table tbody td, .metric-table tr > td { text-align: center; }
     .metric-table tr > .mcol { text-align: left; }
-    .metric-table tr.ours td { background: var(--ours-bg); color: var(--ours); font-weight: 600; }
-    .metric-table td.best { font-weight: 800; }
+    .metric-table tr.ours td { background: var(--ours-bg); }
+    .metric-table td.best { font-weight: 700; }
     .metric-table td.second { text-decoration: underline; text-underline-offset: 3px; }
-    .metric-note { font-size: 0.76rem; color: #888; margin-top: 4px; }
-    .instr { text-align: center; font-size: 0.92rem; color: #444; margin: 0.9rem 0 0.7rem; }
-    .instr .k { color: #999; font-size: 0.78rem; margin-right: 6px; }
-    .gen-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; max-width: 760px; margin: 0 auto; }
-    .gen-grid .cap-top { font-size: 0.78rem; color: #666; text-align: center; margin-bottom: 3px; font-weight: 600; }
+    .metric-note { font-size: 0.78rem; color: #888; margin-top: 4px; }
+    .instr { text-align: center; font-size: 0.92rem; color: #444; margin: 0.8rem 0 0.6rem; }
+    .instr .k { color: #999; margin-right: 6px; font-family: 'Times New Roman', serif; font-style: italic; }
+    .gen-grid, .rm-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; max-width: 760px; margin: 0 auto; }
+    .gen-grid .cap-top, .rm-grid .cap-top { font-size: 0.78rem; color: #666; text-align: center; margin-bottom: 3px; font-weight: 600; line-height: 1.25; }
     .gen-grid .cap-top.ours { color: var(--ours); }
     .gen-grid .cap-top.ref { color: var(--ref); }
-    .gen-grid .cap-top.cur { color: #9a7512; }
-    .gen-sep { grid-column: 1 / -1; font-size: 0.74rem; color: #999; text-transform: uppercase; letter-spacing: 0.05em; margin-top: 4px; }
-    .rm-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; max-width: 760px; margin: 0 auto; }
-    .rm-grid .cap-top { font-size: 0.78rem; color: #666; text-align: center; margin-bottom: 3px; font-weight: 600; line-height: 1.25; }
+    .gen-grid .cap-top.cur { color: #8a6a10; }
+    .gen-sep { grid-column: 1 / -1; font-size: 0.8rem; color: #888; margin-top: 4px; border-bottom: 1px solid var(--rule); padding-bottom: 2px; }
     .rm-grid .cap-top .s { display: block; font-weight: 400; color: #999; font-size: 0.72rem; }
     @media (max-width: 640px) { .gen-grid, .rm-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-    /* --- Human vs robot pairs: t-SNE (paper Figure 18) --- */
     .tsne-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; max-width: 640px; margin: 0 auto; position: relative; }
     @media (max-width: 640px) { .tsne-pair { grid-template-columns: 1fr; } }
-    .tsne-cap { text-align: center; font-size: 0.82rem; font-weight: 700; color: #555; margin-bottom: 4px; }
+    .tsne-cap { text-align: center; font-size: 0.82rem; font-weight: 600; color: #555; margin-bottom: 4px; }
     details.more { text-align: center; }
-    details.more > summary {
-      display: inline-block; cursor: pointer; list-style: none; padding: 7px 16px; border-radius: 999px;
-      border: 1px solid var(--ours-line); background: var(--ours-bg); color: var(--ours); font-weight: 600; font-size: 0.88rem;
-    }
+    details.more > summary { display: inline-block; cursor: pointer; color: var(--ours); font-size: 0.9rem; text-decoration: underline; text-underline-offset: 3px; }
     details.more > summary::-webkit-details-marker { display: none; }
-    details.more > summary::before { content: "\25B8"; margin-right: 6px; display: inline-block; transition: transform .15s; }
+    details.more > summary::before { content: "\25B8"; margin-right: 5px; display: inline-block; transition: transform .15s; }
     details.more[open] > summary::before { transform: rotate(90deg); }
     details.more > .card { text-align: left; }
-    .tsne-svg svg { display: block; width: 100%; height: auto; background: #fcfcfb; border: 1px solid #eee; border-radius: 10px; }
+    .tsne-svg svg { display: block; width: 100%; height: auto; border: 1px solid #e5e5e5; }
     .tsne-legend { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; font-size: 0.82rem; color: #444; margin: 8px 0 2px; }
-    .tsne-legend .sw { display: inline-block; width: 11px; height: 11px; border-radius: 50%; vertical-align: -1px; margin-right: 5px; }
+    .tsne-legend .sw { display: inline-block; width: 10px; height: 10px; border-radius: 50%; vertical-align: -1px; margin-right: 5px; }
     .tsne-stat { text-align: center; font-size: 0.84rem; color: #555; margin-top: 8px; }
     .tsne-stat b { color: var(--ink); }
-    /* --- Post-training placeholders (content to come) --- */
-    .ph-block { margin-top: 2.6rem; }
-    .ph-block .ph-lead { max-width: 820px; margin: 0 auto 0.8rem; text-align: center; color: #4a4a4a; font-size: 0.95rem; }
-    .ph-box {
-      max-width: 1000px; margin: 0 auto; min-height: 180px; border: 2px dashed #cfd8cc; border-radius: 14px; background: #fafcf9;
-      display: flex; align-items: center; justify-content: center; text-align: center; color: #8a9a86; font-size: 0.9rem; padding: 16px;
-    }
-    /* --- Table of contents: fixed at the left on wide screens, a sticky bar otherwise --- */
+    .ph-block { margin-top: 3rem; }
+    .ph-block .ph-lead { max-width: 860px; margin: 0 auto 0.8rem; text-align: center; color: #444; font-size: 0.95rem; }
     html { scroll-behavior: smooth; }
-    section[id] { scroll-margin-top: 12px; }
-    /* the body is shifted right by the sidebar's width so the fixed table of contents never overlaps content */
-    body { padding-left: 170px; }
-    /* with the sidebar taking width, keep the two-line title on two lines */
-    @media (min-width: 1200px) and (max-width: 1399px) { .publication-title.is-2 { font-size: 2.1rem; } }
-    .toc { position: fixed; top: 50%; left: 1.6rem; transform: translateY(-50%); z-index: 100; display: flex; flex-direction: column; gap: 1.2rem; }
-    .toc::before { content: ''; position: absolute; top: 0; bottom: 0; left: 6px; width: 3px; background: #e2e8f0; border-radius: 2px; }
-    .toc::after {
-      content: ''; position: absolute; left: 6px; width: 3px; height: 70px; top: var(--active-position, 0);
-      background: linear-gradient(to bottom, transparent, #03c75a, #03c75a, transparent); transition: top .3s ease, opacity .3s ease;
-      opacity: 0;
-    }
-    .toc.has-active::after { opacity: 1; }
-    .toc-item { display: flex; align-items: center; gap: 0.8rem; position: relative; color: #8a94a6; }
-    .toc-dot { width: 12px; height: 12px; border-radius: 50%; background: #cbd5e1; border: 2px solid #fff; box-sizing: content-box; position: relative; z-index: 2; transition: all .25s ease; }
-    .toc-label { font-size: 0.86rem; font-weight: 600; transition: color .25s ease; }
-    .toc-item:hover .toc-dot, .toc-item.active .toc-dot { background: #03c75a; transform: scale(1.3); }
-    .toc-item:hover .toc-label, .toc-item.active .toc-label { color: #03c75a; font-weight: 700; }
-    @media (max-width: 1199px) {
-      body { padding-left: 0; }
-      .toc {
-        position: sticky; top: 0; left: 0; transform: none; flex-direction: row; justify-content: center; gap: 1.1rem;
-        background: rgba(255,255,255,0.94); backdrop-filter: blur(6px); border-bottom: 1px solid #eee;
-        padding: 8px 16px; overflow-x: auto; white-space: nowrap;
-      }
-      .toc::before, .toc::after { display: none; }
-      .toc-item { gap: 0.4rem; flex: none; }
-      .toc-dot { width: 8px; height: 8px; }
-      .toc-label { font-size: 0.8rem; }
-      section[id] { scroll-margin-top: 48px; }
-    }
-    @media (max-width: 640px) { .toc { justify-content: flex-start; } }
-    /* --- Scaling plot (paper Figures 9 and 21) --- */
+    section[id] { scroll-margin-top: 52px; }
+    /* content bar */
+    .navbar-toc { position: sticky; top: 0; z-index: 100; background: rgba(255,255,255,0.97); border-bottom: 1px solid var(--rule); }
+    .navbar-toc .inner { max-width: 1000px; margin: 0 auto; padding: 0 1.5rem; display: flex; align-items: center; gap: 1.6rem; height: 44px; }
+    .navbar-toc .brand { font-family: 'Google Sans', sans-serif; font-weight: 700; color: var(--ours); margin-right: auto; }
+    .navbar-toc .links { display: flex; gap: 1.4rem; overflow-x: auto; white-space: nowrap; scrollbar-width: none; }
+    .navbar-toc .links::-webkit-scrollbar { display: none; }
+    .navbar-toc .links a { color: #555; font-size: 0.9rem; padding: 11px 0 9px; border-bottom: 2px solid transparent; }
+    .navbar-toc .links a:hover { color: var(--ink); }
+    .navbar-toc .links a.active { color: var(--ours); border-bottom-color: var(--ours); }
+    @media (max-width: 700px) { .navbar-toc .brand { display: none; } .navbar-toc .inner { gap: 0; } .navbar-toc .links { gap: 1.1rem; } }
+    /* scaling plot */
     .scale-legend { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; font-size: 0.8rem; color: #444; margin-bottom: 6px; }
     .scale-legend .ln { display: inline-block; width: 18px; height: 0; border-top: 3px solid; vertical-align: 3px; margin-right: 6px; }
     .scale-legend .ln[style*="background"] { height: 3px; border: none; }
@@ -429,34 +286,38 @@
     .scale-legend .band { display: inline-block; width: 16px; height: 10px; background: rgba(138,99,210,0.16); vertical-align: -1px; margin-right: 6px; }
     .scale-panels { display: grid; gap: 10px; position: relative; }
     .scale-panels svg { display: block; width: 100%; height: auto; overflow: visible; }
-    .scale-panels .t { font-size: 13px; font-weight: 700; fill: #363636; }
+    .scale-panels .t { font-size: 13px; font-weight: 700; fill: #333; }
     .scale-panels .tick { font-size: 10px; fill: #8a8a8a; }
     .scale-panels .val { font-size: 11px; font-weight: 700; }
     .scale-panels .grid { stroke: #eee; }
-    /* --- RoboCasa comparison --- */
-    .rc-row { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; max-width: 760px; margin: 0 auto; }
+    .rc-row { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; max-width: 760px; margin: 0 auto; }
     @media (max-width: 640px) { .rc-row { grid-template-columns: 1fr; } }
     .vbox.rc { aspect-ratio: 224 / 226; }
-    /* --- TableTop-Sim comparison --- */
     .tt-tabs { max-width: 720px; margin: 1rem auto 0.9rem; }
     .tt-tabs .tab-btn { white-space: nowrap; }
-    .tt-row { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; max-width: 1000px; margin: 0 auto; }
+    .tt-row { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; max-width: 1000px; margin: 0 auto; }
     @media (max-width: 640px) { .tt-row { grid-template-columns: 1fr; } }
     .vbox.tt { aspect-ratio: 640 / 432; }
+    pre { background: #f5f5f5; border-radius: 0; }
   </style>
 </head>
 
 <body>
 
-<!-- ============ TABLE OF CONTENTS ============ -->
-<nav class="toc" aria-label="Sections">
-  <a href="#abstract" class="toc-item"><span class="toc-dot"></span><span class="toc-label">Abstract</span></a>
-  <a href="#overview" class="toc-item"><span class="toc-dot"></span><span class="toc-label">Overview</span></a>
-  <a href="#data" class="toc-item"><span class="toc-dot"></span><span class="toc-label">Data</span></a>
-  <a href="#model" class="toc-item"><span class="toc-dot"></span><span class="toc-label">Model</span></a>
-  <a href="#results" class="toc-item"><span class="toc-dot"></span><span class="toc-label">Post-Training</span></a>
-  <a href="#analysis" class="toc-item"><span class="toc-dot"></span><span class="toc-label">Analysis</span></a>
-  <a href="#BibTeX" class="toc-item"><span class="toc-dot"></span><span class="toc-label">Citation</span></a>
+<!-- ============ CONTENT BAR ============ -->
+<nav class="navbar-toc" aria-label="Sections">
+  <div class="inner">
+    <a href="#" class="brand">WATCH</a>
+    <div class="links">
+      <a href="#abstract">Abstract</a>
+      <a href="#overview">Overview</a>
+      <a href="#data">Data</a>
+      <a href="#model">Model</a>
+      <a href="#results">Results</a>
+      <a href="#analysis">Analysis</a>
+      <a href="#BibTeX">BibTeX</a>
+    </div>
+  </div>
 </nav>
 
 <!-- ============ HEADER ============ -->
@@ -486,6 +347,9 @@
           <div class="is-size-6" style="margin-top:0.3rem; color:#888;">
             <sup>*</sup>This work was done while at NAVER AI Lab.
           </div>
+          <div style="margin-top:1rem;">
+            <img src="./assets/fig/ai_lab_logo.png" alt="NAVER AI Lab" style="height:32px; width:auto; max-width:100%;">
+          </div>
 
           <div class="column has-text-centered" style="margin-top:1.2rem;">
             <div class="publication-links">
@@ -509,11 +373,11 @@
 </section>
 
 <!-- ============ TEASER + ABSTRACT ============ -->
-<section class="section hero is-light" id="abstract" style="padding-top:1.5rem;">
+<section class="section" id="abstract" style="padding-top:0.5rem;">
   <div class="container" style="max-width:900px;">
     <div class="columns is-centered has-text-centered">
       <div class="column is-full" style="max-width:100%;">
-        <div class="video-card" style="max-width:820px; margin:0 auto;">
+        <div class="video-card" style="max-width:860px; margin:0 auto;">
           <video id="teaser" autoplay controls muted loop playsinline>
             <source src="assets/teaser.mp4" type="video/mp4">
           </video>
@@ -521,7 +385,7 @@
         </div>
         <br>
         <h2 class="title is-3">Abstract</h2>
-        <div class="content has-text-justified" style="max-width:820px; margin:0 auto;">
+        <div class="content has-text-justified" style="max-width:860px; margin:0 auto;">
           <p>
             World-action models inherit broad visual and physical priors from video pre-training. However, standard
             <b>within-video</b> next-frame prediction allows them to rely on appearance shared between the context and
@@ -553,8 +417,7 @@
 <section class="section" id="overview">
   <div class="container is-wide">
     <div class="has-text-centered">
-      <p class="subhead">Overview</p>
-      <h2 class="title is-3">Predict One Demonstration from Another</h2>
+      <h2 class="title is-3">Overview</h2>
       <figure class="image" style="max-width:1000px; margin:0 auto 1.2rem;">
         <img src="./assets/fig/teaser2.png" loading="lazy" style="width:100%; height:auto;">
       </figure>
@@ -593,13 +456,12 @@
   </div>
 </section>
 
-<hr style="height:2px; background:#dbdbdb; border:none; margin:10px auto; width:85%">
+<hr class="sec-rule">
 
 <!-- ============ DATA ============ -->
-<section class="section section-band" id="data">
+<section class="section" id="data">
   <div class="container is-wide">
     <div class="has-text-centered">
-      <p class="subhead">Data</p>
       <h2 class="title is-3">Task-Paired Human Demonstrations</h2>
       <p class="content lead-narrow has-text-justified">
         Human demonstrations recorded by different people, with different rigs and in different environments, vary
@@ -610,32 +472,19 @@
       </p>
     </div>
 
-    <div class="pipeline">
-      <div class="pipe-step">
-        <span class="num">1</span><b>Task taxonomy</b>
-        <p>A semantic task taxonomy restricts candidate references to compatible activities.</p>
-      </div>
-      <span class="pipe-arrow">&rarr;</span>
-      <div class="pipe-step">
-        <span class="num">2</span><b>Motion matching</b>
-        <p>Candidates are ranked by dynamic-time-warping distance between motion trajectories, standardized per window so interactions match despite differences in reach.</p>
-      </div>
-      <span class="pipe-arrow">&rarr;</span>
-      <div class="pipe-step">
-        <span class="num">3</span><b>Reference set</b>
-        <p>Up to 8 nearest matches from the query&rsquo;s own source and up to 7 from other sources; one is sampled at every training step.</p>
-      </div>
-    </div>
+    <ol class="steps content">
+      <li><b>Task taxonomy.</b> A semantic task taxonomy restricts candidate references to compatible activities.</li>
+      <li><b>Motion matching.</b> Candidates are ranked by dynamic-time-warping distance between motion trajectories, standardized per window so interactions match despite differences in reach.</li>
+      <li><b>Reference set.</b> Up to 8 nearest matches from the query&rsquo;s own source and up to 7 from other sources; one is sampled at every training step.</li>
+    </ol>
 
-    <div style="margin-top:1.4rem; display:flex; justify-content:center; gap:10px; flex-wrap:wrap;">
-      <div class="kpi"><span class="big">10.99M</span><span class="small">query&ndash;reference pairs</span></div>
-      <div class="kpi"><span class="big">10.0K h</span><span class="small">of paired 3-second windows</span></div>
-      <div class="kpi"><span class="big">10.52</span><span class="small">references per query<br>(6.35 cross-source)</span></div>
-      <div class="kpi"><span class="big">90.7%</span><span class="small">of queries have a<br>cross-source reference</span></div>
-    </div>
+    <table class="stat-table">
+      <tr><th>Query&ndash;reference pairs</th><th>Paired 3-s windows</th><th>References per query</th><th>Queries with a cross-source reference</th></tr>
+      <tr><td>10.99M</td><td>10.0K h</td><td>10.52 <span style="font-weight:400; font-size:0.85rem; color:#777;">(6.35 cross-source)</span></td><td>90.7%</td></tr>
+    </table>
 
-    <div style="margin-top:2rem;">
-      <p class="subhead has-text-centered">Explore the Pairs</p>
+    <div class="sub-block">
+      <h3 class="title is-4 has-text-centered">Explore the Pairs</h3>
       <p class="content has-text-centered lead-narrow" style="margin-bottom:0;">
         Each query window with its retrieved task-matched references, ranked by motion distance.
         Hand trajectories are overlaid.
@@ -661,13 +510,12 @@
   </div>
 </section>
 
-<hr style="height:2px; background:#dbdbdb; border:none; margin:10px auto; width:85%">
+<hr class="sec-rule">
 
 <!-- ============ MODEL ============ -->
 <section class="section" id="model">
   <div class="container is-wide">
     <div class="has-text-centered">
-      <p class="subhead">Model</p>
       <h2 class="title is-3">Reference-Conditioned Joint Action&ndash;Video Prediction</h2>
       <p class="content lead-narrow has-text-justified">
         WATCH builds on the joint video&ndash;action recipe of Cosmos Policy. The reference video and its actions,
@@ -738,13 +586,12 @@
   </div>
 </section>
 
-<hr style="height:2px; background:#dbdbdb; border:none; margin:10px auto; width:85%">
+<hr class="sec-rule">
 
 <!-- ============ POST-TRAINING RESULTS ============ -->
-<section class="section section-band" id="results">
+<section class="section" id="results">
   <div class="container is-wide">
     <div class="has-text-centered">
-      <p class="subhead">Post-Training Results</p>
       <h2 class="title is-3">Robot Post-Training</h2>
       <p class="content lead-narrow has-text-justified">
         After pre-training on human pairs only, the model is post-trained on the GR1 humanoid and conditioned on a
@@ -756,10 +603,9 @@
 
     <!-- ---- all tasks ---- -->
     <div style="margin-top:1.6rem;">
-      <p class="subhead has-text-centered">All Tasks</p>
+      <h3 class="title is-4 has-text-centered">All MimicDroid Tasks</h3>
       <p class="content has-text-centered lead-narrow" style="margin-bottom:0;">
         WATCH on every MimicDroid task, with the human reference it is conditioned on, from all three cameras.
-        Episodes include failures (&#10007;).
       </p>
       <div class="level-tabs" id="all-tasks"></div>
       <div class="views-panel">
@@ -777,7 +623,7 @@
             </div>
           </div>
           <div class="views-group">
-            <p class="grp-lab ours">WATCH rollout <span class="outcome-inline" id="all-outcome"></span></p>
+            <p class="grp-lab ours">WATCH rollout</p>
             <div class="views3">
               <div><div class="vbox ours"><video id="all-roll-rear" autoplay loop muted playsinline></video></div><p class="cam-lab">Rear</p></div>
               <div><div class="vbox ours"><video id="all-roll-left" autoplay loop muted playsinline></video></div><p class="cam-lab">Left</p></div>
@@ -790,7 +636,6 @@
 
     <!-- ---- comparison ---- -->
     <div style="margin-top:3rem;">
-      <p class="subhead has-text-centered">Comparison</p>
       <h3 class="title is-4 has-text-centered">Same Episode, Three Pre-Training Choices</h3>
       <p class="content has-text-centered lead-narrow" style="margin-bottom:0;">
         The same evaluation episode and reference for Cosmos Policy post-trained without pre-training, after
@@ -808,16 +653,15 @@
         </div>
         <span class="arrow">&rarr;</span>
         <div class="cmp-methods">
-          <div class="cmp-col"><p class="mname">Without pre-training</p><div class="vbox base"><video id="cmp-v-without_pretraining" autoplay loop muted playsinline></video><span class="outcome" id="cmp-o-without_pretraining"></span></div></div>
-          <div class="cmp-col"><p class="mname">Within-video</p><div class="vbox base"><video id="cmp-v-within_video" autoplay loop muted playsinline></video><span class="outcome" id="cmp-o-within_video"></span></div></div>
-          <div class="cmp-col ours"><p class="mname">WATCH (Ours)</p><div class="vbox ours"><video id="cmp-v-watch" autoplay loop muted playsinline></video><span class="outcome" id="cmp-o-watch"></span></div></div>
+          <div class="cmp-col"><p class="mname">Without pre-training</p><div class="vbox base"><video id="cmp-v-without_pretraining" autoplay loop muted playsinline></video></div></div>
+          <div class="cmp-col"><p class="mname">Within-video</p><div class="vbox base"><video id="cmp-v-within_video" autoplay loop muted playsinline></video></div></div>
+          <div class="cmp-col ours"><p class="mname">WATCH (Ours)</p><div class="vbox ours"><video id="cmp-v-watch" autoplay loop muted playsinline></video></div></div>
         </div>
       </div>
     </div>
 
     <!-- ---- 2x speed comparison ---- -->
     <div style="margin-top:3rem;" id="ph-2x">
-      <p class="subhead has-text-centered">In-Context, Infeasible Demonstration</p>
       <h3 class="title is-4 has-text-centered">2&times; Speed Reference</h3>
       <p class="content has-text-centered lead-narrow" style="margin-bottom:0;">
         The human reference is replayed at 2&times; speed, faster than the robot can follow, in post-training and
@@ -835,29 +679,27 @@
         </div>
         <span class="arrow">&rarr;</span>
         <div class="cmp-methods">
-          <div class="cmp-col"><p class="mname">Without pre-training</p><div class="vbox base"><video id="cmp2x-v-without_pretraining" autoplay loop muted playsinline></video><span class="outcome" id="cmp2x-o-without_pretraining"></span></div></div>
-          <div class="cmp-col"><p class="mname">Within-video</p><div class="vbox base"><video id="cmp2x-v-within_video" autoplay loop muted playsinline></video><span class="outcome" id="cmp2x-o-within_video"></span></div></div>
-          <div class="cmp-col ours"><p class="mname">WATCH (Ours)</p><div class="vbox ours"><video id="cmp2x-v-watch" autoplay loop muted playsinline></video><span class="outcome" id="cmp2x-o-watch"></span></div></div>
+          <div class="cmp-col"><p class="mname">Without pre-training</p><div class="vbox base"><video id="cmp2x-v-without_pretraining" autoplay loop muted playsinline></video></div></div>
+          <div class="cmp-col"><p class="mname">Within-video</p><div class="vbox base"><video id="cmp2x-v-within_video" autoplay loop muted playsinline></video></div></div>
+          <div class="cmp-col ours"><p class="mname">WATCH (Ours)</p><div class="vbox ours"><video id="cmp2x-v-watch" autoplay loop muted playsinline></video></div></div>
         </div>
       </div>
     </div>
 
     <!-- ---- TableTop-Sim (context-free) ---- -->
     <div class="ph-block" id="ph-tt">
-      <p class="subhead has-text-centered">Context-Free, Another Robot</p>
       <h3 class="title is-4 has-text-centered">TableTop-Sim (Bimanual ALOHA)</h3>
       <p class="ph-lead">Context-free post-training on a bimanual ALOHA robot with a different action space and no reference input, for the three pre-training choices.</p>
       <div class="frame-tabs tt-tabs" id="tt-tasks"></div>
       <div class="tt-row">
-        <div class="cmp-col"><p class="mname">Without pre-training</p><div class="vbox base tt"><video id="tt-v-without_pretraining" autoplay loop muted playsinline></video><span class="outcome" id="tt-o-without_pretraining"></span></div></div>
-        <div class="cmp-col"><p class="mname">Within-video</p><div class="vbox base tt"><video id="tt-v-within_video" autoplay loop muted playsinline></video><span class="outcome" id="tt-o-within_video"></span></div></div>
-        <div class="cmp-col ours"><p class="mname">WATCH (Ours)</p><div class="vbox ours tt"><video id="tt-v-watch" autoplay loop muted playsinline></video><span class="outcome" id="tt-o-watch"></span></div></div>
+        <div class="cmp-col"><p class="mname">Without pre-training</p><div class="vbox base tt"><video id="tt-v-without_pretraining" autoplay loop muted playsinline></video></div></div>
+        <div class="cmp-col"><p class="mname">Within-video</p><div class="vbox base tt"><video id="tt-v-within_video" autoplay loop muted playsinline></video></div></div>
+        <div class="cmp-col ours"><p class="mname">WATCH (Ours)</p><div class="vbox ours tt"><video id="tt-v-watch" autoplay loop muted playsinline></video></div></div>
       </div>
     </div>
 
     <!-- ---- RoboCasa Kitchen-H50 (context-free) ---- -->
     <div class="ph-block" id="ph-rc">
-      <p class="subhead has-text-centered">Context-Free, Another Robot</p>
       <h3 class="title is-4 has-text-centered">RoboCasa Kitchen-H50 (Franka)</h3>
       <p class="ph-lead">Context-free post-training on a single-arm Franka with 50 human demonstrations per task. The same episode for the three pre-training choices, one episode per task.</p>
       <div class="tabs-row" id="rc-tasks"></div>
@@ -865,15 +707,14 @@
         <div class="ctrl" id="rc-cam"><span class="lab">Camera</span><button data-v="left" class="is-active">Left</button><button data-v="right">Right</button><button data-v="wrist">Wrist</button></div>
       </div>
       <div class="rc-row">
-        <div class="cmp-col"><p class="mname">Without pre-training</p><div class="vbox base rc"><video id="rc-v-without_pretraining" autoplay loop muted playsinline></video><span class="outcome" id="rc-o-without_pretraining"></span></div></div>
-        <div class="cmp-col"><p class="mname">Within-video</p><div class="vbox base rc"><video id="rc-v-within_video" autoplay loop muted playsinline></video><span class="outcome" id="rc-o-within_video"></span></div></div>
-        <div class="cmp-col ours"><p class="mname">WATCH (Ours)</p><div class="vbox ours rc"><video id="rc-v-watch" autoplay loop muted playsinline></video><span class="outcome" id="rc-o-watch"></span></div></div>
+        <div class="cmp-col"><p class="mname">Without pre-training</p><div class="vbox base rc"><video id="rc-v-without_pretraining" autoplay loop muted playsinline></video></div></div>
+        <div class="cmp-col"><p class="mname">Within-video</p><div class="vbox base rc"><video id="rc-v-within_video" autoplay loop muted playsinline></video></div></div>
+        <div class="cmp-col ours"><p class="mname">WATCH (Ours)</p><div class="vbox ours rc"><video id="rc-v-watch" autoplay loop muted playsinline></video></div></div>
       </div>
     </div>
 
     <!-- ---- context-free MimicDroid ---- -->
     <div class="ph-block" id="ph-cf-md">
-      <p class="subhead has-text-centered">Context-Free</p>
       <h3 class="title is-4 has-text-centered">MimicDroid Without a Reference</h3>
       <p class="ph-lead">The reference slots are removed in post-training and evaluation (GR1 humanoid). The same evaluation episode for the three pre-training choices, one episode per task.</p>
       <div class="frame-tabs tt-tabs" id="cmpcf-tasks"></div>
@@ -881,15 +722,14 @@
         <div class="ctrl" id="cmpcf-cam"><span class="lab">Camera</span><button data-v="rear" class="is-active">Rear</button><button data-v="left">Left</button><button data-v="right">Right</button></div>
       </div>
       <div class="rc-row">
-        <div class="cmp-col"><p class="mname">Without pre-training</p><div class="vbox base"><video id="cmpcf-v-without_pretraining" autoplay loop muted playsinline></video><span class="outcome" id="cmpcf-o-without_pretraining"></span></div></div>
-        <div class="cmp-col"><p class="mname">Within-video</p><div class="vbox base"><video id="cmpcf-v-within_video" autoplay loop muted playsinline></video><span class="outcome" id="cmpcf-o-within_video"></span></div></div>
-        <div class="cmp-col ours"><p class="mname">WATCH (Ours)</p><div class="vbox ours"><video id="cmpcf-v-watch" autoplay loop muted playsinline></video><span class="outcome" id="cmpcf-o-watch"></span></div></div>
+        <div class="cmp-col"><p class="mname">Without pre-training</p><div class="vbox base"><video id="cmpcf-v-without_pretraining" autoplay loop muted playsinline></video></div></div>
+        <div class="cmp-col"><p class="mname">Within-video</p><div class="vbox base"><video id="cmpcf-v-within_video" autoplay loop muted playsinline></video></div></div>
+        <div class="cmp-col ours"><p class="mname">WATCH (Ours)</p><div class="vbox ours"><video id="cmpcf-v-watch" autoplay loop muted playsinline></video></div></div>
       </div>
     </div>
 
     <!-- ---- Scaling (paper Figures 9 and 21) ---- -->
     <div class="ph-block" id="ph-scale">
-      <p class="subhead has-text-centered">Scaling</p>
       <h3 class="title is-4 has-text-centered">More Paired Human Video, Better Robot Policies</h3>
       <div class="ctrl-row">
         <div class="ctrl" id="scale-setting"><span class="lab">Post-training</span><button data-v="icl" class="is-active">In-context</button><button data-v="cf">Context-free</button></div>
@@ -918,13 +758,12 @@
   </div>
 </section>
 
-<hr style="height:2px; background:#dbdbdb; border:none; margin:10px auto; width:85%">
+<hr class="sec-rule">
 
 <!-- ============ ANALYSIS ============ -->
 <section class="section" id="analysis">
   <div class="container is-wide">
     <div class="has-text-centered">
-      <p class="subhead">Analysis</p>
       <h2 class="title is-3">What Cross-Video Pre-Training Learns</h2>
       <p class="content lead-narrow has-text-justified">
         Before any robot post-training, we examine how WATCH uses the reference, whether its motion representation
@@ -1155,6 +994,17 @@
         </p>
       </div>
     </div>
+  </div>
+</section>
+
+<!-- ============ ACKNOWLEDGEMENTS ============ -->
+<section class="section" id="acknowledgements">
+  <div class="container is-max-desktop content">
+    <h2 class="title is-4">Acknowledgements</h2>
+    <p>
+      We thank our colleagues at NAVER AI Lab for their valuable feedback and support throughout this work.
+      We also thank Junha Song for helpful discussions.
+    </p>
   </div>
 </section>
 
@@ -1404,8 +1254,6 @@
         vids['ref-' + c].src = base + 'watch_reference_video_' + c + '.mp4';
         vids['roll-' + c].src = base + 'watch_rollout_' + c + '.mp4';
       });
-      var ok = !/_fail$/.test(state.ep), o = document.getElementById('all-outcome');
-      o.className = 'outcome-inline ' + (ok ? 'success' : 'fail'); o.textContent = ok ? 'Success' : 'Fail';
       epRow.querySelectorAll('.ep-btn').forEach(function (b) { b.classList.toggle('is-active', b.dataset.ep === state.ep); });
     }
     function selectTask(key) {
@@ -1419,7 +1267,7 @@
       epRow.innerHTML = '<span class="lab">Episode</span>';
       eps.forEach(function (ep, i) {
         var b = document.createElement('button');
-        b.className = 'ep-btn ' + (/_fail$/.test(ep) ? 'fail' : 'success');
+        b.className = 'ep-btn';
         b.textContent = String(i + 1); b.dataset.ep = ep;
         b.addEventListener('click', function () { state.ep = ep; load(); });
         epRow.appendChild(b);
@@ -1467,10 +1315,7 @@
       var base = VID + o.folder + '/' + state.task + '/';
       if (ref) ref.src = base + file('watch', o.refClip);
       METHODS.forEach(function (m) {
-        var f = file(m, 'rollout'), ok = /_success_/.test(f || '');
-        $('v-' + m).src = base + f;
-        var el = $('o-' + m);
-        el.className = 'outcome ' + (ok ? 'success' : 'fail'); el.textContent = ok ? 'Success' : 'Fail';
+        $('v-' + m).src = base + file(m, 'rollout');
       });
     }
     function selectTask(key) {
@@ -1836,30 +1681,6 @@
     segButtons('tsne-robot', draw);
     draw('franka');
   })();
-  // ---- Table of contents: highlight the section at the middle of the viewport
-  (function () {
-    var toc = document.querySelector('.toc');
-    var links = toc.querySelectorAll('.toc-item');
-    function activate(id) {
-      toc.classList.add('has-active');
-      links.forEach(function (a) {
-        var on = a.getAttribute('href') === '#' + id;
-        a.classList.toggle('active', on);
-        if (on) {
-          toc.style.setProperty('--active-position', (a.offsetTop + a.offsetHeight / 2 - 35) + 'px');
-          if (toc.scrollWidth > toc.clientWidth) toc.scrollLeft = a.offsetLeft - toc.clientWidth / 2 + a.offsetWidth / 2;
-        }
-      });
-    }
-    if (!('IntersectionObserver' in window)) return;
-    var spy = new IntersectionObserver(function (entries) {
-      entries.forEach(function (e) { if (e.isIntersecting) activate(e.target.id); });
-    }, { rootMargin: '-50% 0px -50% 0px', threshold: 0 });
-    links.forEach(function (a) {
-      var sec = document.getElementById(a.getAttribute('href').slice(1));
-      if (sec) spy.observe(sec);
-    });
-  })();
   // ---- Post-training: scaling with human vs robot pairs on a collection-budget axis (paper Figures 9 and 21)
   (function () {
     var HX = [0, 0.25, 0.5, 0.75, 1.0], RF = [0, 0.10, 0.25], C = { lo: 4, mid: 8, hi: 16 };
@@ -1940,8 +1761,6 @@
       state.key = key;
       METHODS.forEach(function (m) {
         document.getElementById('rc-v-' + m).src = VID + 'robocasa/' + key + '/' + m + '_' + state.cam + '.mp4';
-        var el = document.getElementById('rc-o-' + m), ok = root[key][m] === 'success';
-        el.className = 'outcome ' + (ok ? 'success' : 'fail'); el.textContent = ok ? 'Success' : 'Fail';
       });
       tabs.querySelectorAll('.tab-btn').forEach(function (b) { b.classList.toggle('is-active', b.dataset.k === key); });
     }
@@ -1967,10 +1786,7 @@
     }
     function show(key) {
       METHODS.forEach(function (m) {
-        var f = clip(key, m), ok = /_success_/.test(f || '');
-        document.getElementById('tt-v-' + m).src = VID + '8_comparison_tabletop/' + key + '/' + f;
-        var el = document.getElementById('tt-o-' + m);
-        el.className = 'outcome ' + (ok ? 'success' : 'fail'); el.textContent = ok ? 'Success' : 'Fail';
+        document.getElementById('tt-v-' + m).src = VID + '8_comparison_tabletop/' + key + '/' + clip(key, m);
       });
       host.querySelectorAll('.tab-btn').forEach(function (b) { b.classList.toggle('is-active', b.dataset.k === key); });
     }
@@ -1987,6 +1803,26 @@
     });
     var first = Object.keys(root).sort()[0];
     if (first) show(first);
+  })();
+  // ---- Content bar: mark the section at the middle of the viewport
+  (function () {
+    var bar = document.querySelector('.navbar-toc .links');
+    var links = bar.querySelectorAll('a');
+    function activate(id) {
+      links.forEach(function (a) {
+        var on = a.getAttribute('href') === '#' + id;
+        a.classList.toggle('active', on);
+        if (on && bar.scrollWidth > bar.clientWidth) bar.scrollLeft = a.offsetLeft - bar.clientWidth / 2 + a.offsetWidth / 2;
+      });
+    }
+    if (!('IntersectionObserver' in window)) return;
+    var spy = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) { if (e.isIntersecting) activate(e.target.id); });
+    }, { rootMargin: '-50% 0px -50% 0px', threshold: 0 });
+    links.forEach(function (a) {
+      var sec = document.getElementById(a.getAttribute('href').slice(1));
+      if (sec) spy.observe(sec);
+    });
   })();
 </script>
 
