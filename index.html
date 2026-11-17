@@ -298,6 +298,23 @@
     .tt-row { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; max-width: 1000px; margin: 0 auto; }
     @media (max-width: 640px) { .tt-row { grid-template-columns: 1fr; } }
     .vbox.tt { aspect-ratio: 640 / 432; }
+    .vbox.hd { aspect-ratio: 16 / 9; }
+    .vbox.hm { aspect-ratio: 4 / 3; }
+    .vbox.pair { aspect-ratio: 2 / 1; }
+    .rr-res { max-width: 1000px; margin: 1.2rem auto 0; display: grid; grid-template-columns: 1fr 1.5fr; gap: 22px; align-items: start; }
+    @media (max-width: 760px) { .rr-res { grid-template-columns: 1fr; } }
+    .rr-res .cap { font-size: 0.82rem; color: #666; text-align: center; margin-top: 4px; }
+    .rr-solo { max-width: 760px; margin: 0 auto; }
+    .rr-pairs { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; max-width: 1000px; margin: 0.6rem auto 0; }
+    @media (max-width: 640px) { .rr-pairs { grid-template-columns: 1fr; } }
+    .rr-pairs .pl { display: flex; justify-content: space-between; font-size: 0.78rem; color: #777; margin-top: 3px; padding: 0 2px; }
+    .rr-pairs .mname { font-size: 0.86rem; font-weight: 600; margin-bottom: 4px; color: #555; text-align: center; }
+    .rr-demo { display: grid; grid-template-columns: minmax(0, 4fr) auto minmax(0, 5.333fr); gap: 14px; align-items: end; max-width: 1000px; margin: 0 auto; }
+    .rr-demo .arrow { align-self: center; }
+    .rr-demo .arrow { color: #999; font-size: 1.5rem; }
+    @media (max-width: 760px) { .rr-demo { grid-template-columns: 1fr; } .rr-demo .arrow { display: none; } }
+    .speed-note { font-size: 0.78rem; color: #999; text-align: center; margin-top: 6px; }
+    .cmp-col.na .vbox { display: flex; align-items: center; justify-content: center; color: #999; font-size: 0.8rem; background: #f5f5f5; }
     pre { background: #f5f5f5; border-radius: 0; }
   </style>
 </head>
@@ -311,6 +328,7 @@
     <div class="links">
       <a href="#abstract">Abstract</a>
       <a href="#overview">Overview</a>
+      <a href="#real">Real Robot</a>
       <a href="#data">Data</a>
       <a href="#model">Model</a>
       <a href="#results">Results</a>
@@ -449,6 +467,131 @@
       </div>
     </div>
 
+  </div>
+</section>
+
+<hr class="sec-rule">
+
+<!-- ============ REAL ROBOT ============ -->
+<section class="section" id="real">
+  <div class="container is-wide">
+    <div class="has-text-centered">
+      <h2 class="title is-3">Real Robot Experiments</h2>
+      <p class="content lead-narrow has-text-justified">
+        We post-train each pre-training checkpoint on a physical humanoid that moves its whole body with two arms,
+        parallel grippers and an egocentric camera. Cosmos Policy without pre-training, with within-video pre-training
+        and with WATCH use the same robot data, recipe and evaluation protocol, with 10 trials per setting.
+      </p>
+    </div>
+
+    <div class="rr-res">
+      <div>
+        <table class="metric-table">
+          <thead>
+            <tr><th></th><th colspan="3" class="grp">Context-free</th></tr>
+            <tr><th align="left">Pre-training</th><th>Easy</th><th>Hard</th><th>Avg.</th></tr>
+          </thead>
+          <tbody>
+            <tr><td class="mcol">None</td><td>63.3</td><td>43.3</td><td>53.3</td></tr>
+            <tr><td class="mcol">Within-video</td><td>76.7</td><td>56.7</td><td>66.7</td></tr>
+            <tr class="ours"><td class="mcol"><b>WATCH</b></td><td class="best">90.0</td><td class="best">70.0</td><td class="best">80.0</td></tr>
+          </tbody>
+        </table>
+        <p class="cap">Three tasks; Hard uses an unseen drawer, cup or object.</p>
+      </div>
+      <div>
+        <table class="metric-table">
+          <thead>
+            <tr><th></th><th rowspan="2">Seen</th><th colspan="4" class="grp">In-context, unseen</th></tr>
+            <tr><th align="left">Pre-training</th><th>Right hand</th><th>Close</th><th>Toy grasp</th><th>Left drawer</th></tr>
+          </thead>
+          <tbody>
+            <tr><td class="mcol">None</td><td>95</td><td>30</td><td>90</td><td>0</td><td>0</td></tr>
+            <tr><td class="mcol">Within-video</td><td class="best">100</td><td>70</td><td class="best">100</td><td>20</td><td>0</td></tr>
+            <tr class="ours"><td class="mcol"><b>WATCH</b></td><td>95</td><td class="best">90</td><td class="best">100</td><td class="best">40</td><td class="best">20</td></tr>
+          </tbody>
+        </table>
+        <p class="cap">Seen: mean of the two post-training tasks. Unseen: open the drawer with the other hand,
+          close it (a new task), grasp a toy with a new wrist angle, and put the cup in the other drawer.</p>
+      </div>
+    </div>
+
+    <!-- ---- context-free ---- -->
+    <div class="ph-block">
+      <h3 class="title is-4 has-text-centered">Context-Free</h3>
+      <p class="ph-lead">
+        20 teleoperated demonstrations per task, with no human video at test time. <i>Easy</i> uses the
+        post-training scene; <i>Hard</i> uses a different drawer, an unseen cup, or a stuffed toy in place of the tumbler.
+      </p>
+      <div class="tabs-row" id="rcf-tasks"></div>
+      <div class="rr-solo">
+        <div class="vbox ours hd"><video id="rcf-v" autoplay loop muted playsinline></video></div>
+        <p class="speed-note">WATCH rollout, 3&times; speed.</p>
+      </div>
+
+      <h3 class="title is-5 has-text-centered" style="margin-top:2rem;">Comparison</h3>
+      <div class="tabs-row" id="rcmp-tasks"></div>
+      <div class="tt-row">
+        <div class="cmp-col"><p class="mname">Without pre-training</p><div class="vbox base hd"><video id="rcmp-v-without_pretraining" autoplay loop muted playsinline></video></div></div>
+        <div class="cmp-col"><p class="mname">Within-video</p><div class="vbox base hd"><video id="rcmp-v-within_video" autoplay loop muted playsinline></video></div></div>
+        <div class="cmp-col ours"><p class="mname">WATCH (Ours)</p><div class="vbox ours hd"><video id="rcmp-v-watch" autoplay loop muted playsinline></video></div></div>
+      </div>
+      <p class="speed-note">3&times; speed.</p>
+    </div>
+
+    <!-- ---- in-context ---- -->
+    <div class="ph-block">
+      <h3 class="title is-4 has-text-centered">In-Context</h3>
+      <p class="ph-lead">
+        Post-training covers two tasks, opening the drawer with the left hand and putting the cup in the right drawer,
+        with each robot demonstration paired with a human video of the same task. At test time the robot follows a
+        human video of a variant or task it has not seen in post-training.
+      </p>
+      <div class="rr-pairs">
+        <div>
+          <p class="mname">Open the drawer with the left hand</p>
+          <div class="vbox ref pair"><video src="assets/videos/9_real_robot/icl/data_open.mp4" autoplay loop muted playsinline></video></div>
+          <div class="pl"><span>Robot (egocentric)</span><span>Paired human video</span></div>
+        </div>
+        <div>
+          <p class="mname">Put the cup in the right drawer</p>
+          <div class="vbox ref pair"><video src="assets/videos/9_real_robot/icl/data_pnp.mp4" autoplay loop muted playsinline></video></div>
+          <div class="pl"><span>Robot (egocentric)</span><span>Paired human video</span></div>
+        </div>
+      </div>
+      <p class="speed-note">Post-training pairs, 3&times; speed.</p>
+
+      <div class="tabs-row" id="rdemo-tasks" style="margin-top:2rem;"></div>
+      <p class="mode-note" id="rdemo-note" style="text-align:center;"></p>
+      <div class="rr-demo">
+        <div class="cmp-ref">
+          <p class="mname">Human video (given at test time)</p>
+          <div class="vbox ref hm"><video id="rdemo-ref" autoplay loop muted playsinline></video></div>
+        </div>
+        <span class="arrow">&rarr;</span>
+        <div class="cmp-col ours">
+          <p class="mname">WATCH (Ours)</p>
+          <div class="vbox ours hd"><video id="rdemo-v" autoplay loop muted playsinline></video></div>
+        </div>
+      </div>
+      <p class="speed-note">3&times; speed.</p>
+
+      <h3 class="title is-5 has-text-centered" style="margin-top:2rem;">Comparison</h3>
+      <div class="tabs-row" id="ricl-tasks"></div>
+      <div class="cmp-layout">
+        <div class="cmp-ref">
+          <p class="mname">Human video</p>
+          <div class="vbox ref hm"><video id="ricl-ref" autoplay loop muted playsinline></video></div>
+        </div>
+        <span class="arrow">&rarr;</span>
+        <div class="cmp-methods">
+          <div class="cmp-col"><p class="mname">Without pre-training</p><div class="vbox base hd"><video id="ricl-v-without_pretraining" autoplay loop muted playsinline></video></div></div>
+          <div class="cmp-col"><p class="mname">Within-video</p><div class="vbox base hd"><video id="ricl-v-within_video" autoplay loop muted playsinline></video></div></div>
+          <div class="cmp-col ours"><p class="mname">WATCH (Ours)</p><div class="vbox ours hd"><video id="ricl-v-watch" autoplay loop muted playsinline></video></div></div>
+        </div>
+      </div>
+      <p class="speed-note">3&times; speed.</p>
+    </div>
   </div>
 </section>
 
@@ -1323,6 +1466,64 @@
     segButtons(o.prefix + '-cam', function (v) { state.cam = v; load(); });
     if (keys.length) selectTask(keys.indexOf(o.first) >= 0 ? o.first : keys[0]);
   }
+
+  // ---- Real robot (assets/videos/9_real_robot)
+  (function () {
+    var RR = 'assets/videos/9_real_robot/';
+    function tabs(id, items, onSel) {
+      var host = document.getElementById(id);
+      items.forEach(function (it, i) {
+        var b = document.createElement('button');
+        b.className = 'tab-btn' + (i === 0 ? ' is-active' : ''); b.dataset.key = it.k;
+        b.innerHTML = it.t + (it.s ? '<span class="src">' + it.s + '</span>' : '');
+        b.addEventListener('click', function () {
+          host.querySelectorAll('.tab-btn').forEach(function (x) { x.classList.toggle('is-active', x === b); });
+          onSel(it);
+        });
+        host.appendChild(b);
+      });
+      onSel(items[0]);
+    }
+    var M = ['without_pretraining', 'within_video', 'watch'];
+    var solo = document.getElementById('rcf-v'); watchVideo(solo);
+    tabs('rcf-tasks', [
+      { k: 'open_easy', t: 'Open Drawer', s: 'Easy' }, { k: 'open_hard', t: 'Open Drawer', s: 'Hard' },
+      { k: 'pnp_easy', t: 'PnP Drawer', s: 'Easy' }, { k: 'pnp_hard', t: 'PnP Drawer', s: 'Hard' },
+      { k: 'take_easy', t: 'Take &amp; Close', s: 'Easy' }, { k: 'take_hard', t: 'Take &amp; Close', s: 'Hard' }
+    ], function (it) { solo.src = RR + 'cf/watch_' + it.k + '.mp4'; });
+    M.forEach(function (m) { watchVideo(document.getElementById('rcmp-v-' + m)); });
+    tabs('rcmp-tasks', [
+      { k: 'pnp_easy', t: 'PnP Drawer', s: 'Easy' }, { k: 'pnp_hard', t: 'PnP Drawer', s: 'Hard' },
+      { k: 'take_easy', t: 'Take &amp; Close', s: 'Easy' }, { k: 'take_hard', t: 'Take &amp; Close', s: 'Hard' }
+    ], function (it) {
+      M.forEach(function (m) { document.getElementById('rcmp-v-' + m).src = RR + 'cf/cmp_' + it.k + '_' + m + '.mp4'; });
+    });
+    var NOTES = {
+      open: 'Post-training opens the drawer with the left hand only.',
+      toy: 'A stuffed toy, grasped with a wrist angle not seen in post-training.',
+      left: 'Post-training puts the cup in the right drawer only.',
+      close: 'Closing the drawer is not a post-training task.'
+    };
+    var dref = document.getElementById('rdemo-ref'), dv = document.getElementById('rdemo-v');
+    watchVideo(dref); watchVideo(dv);
+    tabs('rdemo-tasks', [
+      { k: 'open', t: 'Open Drawer', s: 'right hand' }, { k: 'toy', t: 'Grasp the toy', s: 'new grasp' },
+      { k: 'left', t: 'PnP Drawer', s: 'left drawer' }, { k: 'close', t: 'Close Drawer', s: 'new task' }
+    ], function (it) {
+      document.getElementById('rdemo-note').textContent = NOTES[it.k];
+      dref.src = RR + 'icl/' + it.k + '_human.mp4';
+      dv.src = RR + 'icl/' + it.k + '_watch.mp4';
+    });
+    var ref = document.getElementById('ricl-ref'); watchVideo(ref);
+    M.forEach(function (m) { watchVideo(document.getElementById('ricl-v-' + m)); });
+    tabs('ricl-tasks', [
+      { k: 'open', t: 'Open Drawer', s: 'right hand' }, { k: 'toy', t: 'Grasp the toy', s: 'new grasp' },
+      { k: 'left', t: 'PnP Drawer', s: 'left drawer' }
+    ], function (it) {
+      ref.src = RR + 'icl/' + it.k + '_human.mp4';
+      M.forEach(function (m) { document.getElementById('ricl-v-' + m).src = RR + 'icl/' + it.k + '_' + m + '.mp4'; });
+    });
+  })();
   // recorded speed: every MimicDroid task, one button row per level
   comparisonViewer({ prefix: 'cmp', folder: '8_comparison', levels: null, groupByLevel: true,
                      refClip: 'reference_video', first: '10_PnPSinkToMicrowaveTop_L3' });
