@@ -301,9 +301,7 @@
     .vbox.hd { aspect-ratio: 16 / 9; }
     .vbox.hm { aspect-ratio: 4 / 3; }
     .vbox.pair { aspect-ratio: 2 / 1; }
-    .rr-res { max-width: 1000px; margin: 1.2rem auto 0; display: grid; grid-template-columns: 1fr 1.5fr; gap: 22px; align-items: start; }
     @media (max-width: 760px) { .rr-res { grid-template-columns: 1fr; } }
-    .rr-res .cap { font-size: 0.82rem; color: #666; text-align: center; margin-top: 4px; }
     .rr-solo { max-width: 760px; margin: 0 auto; }
     .rr-pairs { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; max-width: 1000px; margin: 0.6rem auto 0; }
     @media (max-width: 640px) { .rr-pairs { grid-template-columns: 1fr; } }
@@ -482,38 +480,6 @@
         parallel grippers and an egocentric camera. Cosmos Policy without pre-training, with within-video pre-training
         and with WATCH use the same robot data, recipe and evaluation protocol, with 10 trials per setting.
       </p>
-    </div>
-
-    <div class="rr-res">
-      <div>
-        <table class="metric-table">
-          <thead>
-            <tr><th></th><th colspan="3" class="grp">Context-free</th></tr>
-            <tr><th align="left">Pre-training</th><th>Easy</th><th>Hard</th><th>Avg.</th></tr>
-          </thead>
-          <tbody>
-            <tr><td class="mcol">None</td><td>63.3</td><td>43.3</td><td>53.3</td></tr>
-            <tr><td class="mcol">Within-video</td><td>76.7</td><td>56.7</td><td>66.7</td></tr>
-            <tr class="ours"><td class="mcol"><b>WATCH</b></td><td class="best">90.0</td><td class="best">70.0</td><td class="best">80.0</td></tr>
-          </tbody>
-        </table>
-        <p class="cap">Three tasks; Hard uses an unseen drawer, cup or object.</p>
-      </div>
-      <div>
-        <table class="metric-table">
-          <thead>
-            <tr><th></th><th rowspan="2">Seen</th><th colspan="4" class="grp">In-context, unseen</th></tr>
-            <tr><th align="left">Pre-training</th><th>Right hand</th><th>Close</th><th>Toy grasp</th><th>Left drawer</th></tr>
-          </thead>
-          <tbody>
-            <tr><td class="mcol">None</td><td>95</td><td>30</td><td>90</td><td>0</td><td>0</td></tr>
-            <tr><td class="mcol">Within-video</td><td class="best">100</td><td>70</td><td class="best">100</td><td>20</td><td>0</td></tr>
-            <tr class="ours"><td class="mcol"><b>WATCH</b></td><td>95</td><td class="best">90</td><td class="best">100</td><td class="best">40</td><td class="best">20</td></tr>
-          </tbody>
-        </table>
-        <p class="cap">Seen: mean of the two post-training tasks. Unseen: open the drawer with the other hand,
-          close it (a new task), grasp a toy with a new wrist angle, and put the cup in the other drawer.</p>
-      </div>
     </div>
 
     <!-- ---- context-free ---- -->
